@@ -707,14 +707,21 @@ export async function convertPptx(buffer, { mediaPrefix = 'media/' } = {}) {
       const flip = [box.flipH && 'scaleX(-1)', box.flipV && 'scaleY(-1)'].filter(Boolean).join(' ');
       const prst = attr(kid(spPr, 'prstGeom'), 'prst', 'rect');
       const g = geometry(prst, box.w, box.h, path_(spPr, 'prstGeom', 'avLst'));
-      const wrapSt = ['overflow:hidden'];
-      if (g.radius) wrapSt.push(`border-radius:${typeof g.radius === 'number' ? u(g.radius) : g.radius}`);
+      const radius = g.radius ? (typeof g.radius === 'number' ? u(g.radius) : g.radius) : null;
+      // The image is clipped to its frame; the outline sits outside that clip.
+      const clipSt = [];
+      if (radius) clipSt.push(`border-radius:${radius}`);
+      const wrapSt = [];
       if (opacity < 1) wrapSt.push(`opacity:${r2(opacity)}`);
       if (flip) wrapSt.push(`--flip:${flip}`);
       const ln = line(spPr);
-      const border = ln ? `<span class="pic-line" style="box-shadow:inset 0 0 0 ${u(ln.width)} ${css(ln.color)}${g.radius ? `;border-radius:${typeof g.radius === 'number' ? u(g.radius) : g.radius}` : ''}"></span>` : '';
+      // Like PowerPoint and Google Slides, the outline is centred on the frame
+      // edge: half of it overlaps the image, half sits outside.
+      const border = ln
+        ? `<span class="pic-line" style="inset:${u(-ln.width / 2)};box-shadow:inset 0 0 0 ${u(ln.width)} ${css(ln.color)}${radius ? `;border-radius:${typeof g.radius === 'number' ? u(g.radius + ln.width / 2) : radius}` : ''}"></span>`
+        : '';
       const sh = shadow(spPr);
-      const img = `<img class="pic${flip ? ' flip' : ''}" src="${esc(src)}" alt="${esc(alt)}" loading="lazy" decoding="async" style="${imgSt.join(';')}">${border}`;
+      const img = `<div class="pic-clip"${clipSt.length ? ` style="${clipSt.join(';')}"` : ''}><img class="pic${flip ? ' flip' : ''}" src="${esc(src)}" alt="${esc(alt)}" loading="lazy" decoding="async" style="${imgSt.join(';')}"></div>${border}`;
       let html = `<div class="el" style="${wrapperStyle(box, wrapSt)}">${img}</div>`;
       if (sh) html = `<div class="el" style="${wrapperStyle({ ...box, rot: 0 }, [`filter:${sh}`])}"><div class="el" style="left:0;top:0;width:100%;height:100%;${box.rot ? `transform:rotate(${r2(box.rot)}deg);` : ''}${wrapSt.join(';')}">${img}</div></div>`;
       return shapeLink(nv, relMap, html);

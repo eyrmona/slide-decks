@@ -72,6 +72,7 @@ button { font: inherit; color: inherit; }
 .slide .bu { display: inline-block; text-indent: 0; }
 .slide .pic { position: absolute; max-width: none; display: block; object-fit: fill; }
 .slide .pic.flip { transform: var(--flip); }
+.slide .pic-clip { position: absolute; inset: 0; overflow: hidden; }
 .slide .pic-line { position: absolute; inset: 0; pointer-events: none; }
 .slide .tbl { width: 100%; height: 100%; border-collapse: collapse; table-layout: fixed; }
 .slide .tbl td { position: relative; vertical-align: top; padding: 0; }

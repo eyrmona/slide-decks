@@ -124,6 +124,7 @@ async function main() {
   await fs.copyFile(path.join(srcDir, 'viewer.js'), path.join(dist, 'viewer.js'));
   await fs.copyFile(path.join(srcDir, 'html-deck.css'), path.join(dist, 'html-deck.css'));
   await fs.copyFile(path.join(srcDir, 'html-deck.js'), path.join(dist, 'html-deck.js'));
+  await fs.copyFile(path.join(srcDir, 'enhance.js'), path.join(dist, 'enhance.js'));
   await fs.cp(path.join(srcDir, 'components'), path.join(dist, 'components'), { recursive: true });
 
   const built = [];
@@ -140,7 +141,7 @@ async function main() {
 
     const fonts = googleFontsUrls(deck.fonts);
     const slidesHtml = deck.slides
-      .map((s, i) => `      <section class="slide-frame" id="${i + 1}" data-index="${i}"${i ? ' hidden' : ''}>
+      .map((s, i) => `      <section class="slide-frame" id="${i + 1}" data-index="${i}"${entry.enhance?.[i + 1] ? ` data-enhance="${esc(entry.enhance[i + 1])}"` : ''}${i ? ' hidden' : ''}>
         ${slideMarkup(deck, s, i, 'media/')}
         ${s.text ? `<p class="sr-only">${esc(s.text)}</p>` : ''}
       </section>`)
@@ -172,7 +173,7 @@ ${slidesHtml}
         css: '../styles.css',
         head: deck.interactive ? componentHead('../') : '',
         body,
-        scriptTag: '<script src="../viewer.js" defer></script>',
+        scriptTag: `<script src="../viewer.js" defer></script>${entry.enhance ? '\n    <script src="../enhance.js" defer></script>' : ''}`,
         bodyClass: 'deck-page',
       }),
     );

@@ -32,6 +32,20 @@ npm run dev      # build, then serve at http://localhost:4321
 
 The landing page title and tagline live in `decks/site.json`.
 
+### Interactive extras on converted slides
+
+A converted slide can be made interactive from `decks/decks.json` without changing the `.pptx`:
+
+```json
+{ "file": "portfolio.pptx", "slug": "portfolio", "enhance": { "5": "carousel" } }
+```
+
+- `carousel`: the slide's pictures rotate through their original positions (automatically, with ‹ › controls, or by
+  clicking a picture to bring it forward). Clicking the front picture opens it full screen; `Esc` closes it.
+- `zoom`: every picture on the slide opens full screen when clicked (or with `Enter`); `Esc` closes it.
+
+Combine them per slide, e.g. `"enhance": { "5": "carousel", "6": "zoom" }`. Code: `src/enhance.js`.
+
 ### HTML decks with live components
 
 A deck can also be written in HTML, which lets slides contain working UI. See

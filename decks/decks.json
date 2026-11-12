@@ -4,7 +4,11 @@
     "slug": "portfolio",
     "title": "Portfolio",
     "description": "Senior Design Engineer portfolio: background, approach, and selected work.",
-    "date": "2026"
+    "date": "2026",
+    "enhance": {
+      "5": "carousel",
+      "6": "zoom"
+    }
   },
   {
     "file": "cli-case-study.pptx",

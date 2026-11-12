@@ -1,0 +1,14 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "overused-font",
+        "value": "inter",
+        "createdAt": "2026-11-12T16:37:58.308Z",
+        "reason": "Matches the user's existing CLI case study deck, which sets its body text in Inter; the user asked for the same visual style."
+      }
+    ]
+  }
+}

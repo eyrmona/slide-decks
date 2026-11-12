@@ -1,0 +1,367 @@
+<!--
+  Menu component case study. One section element per slide (1280 × 720 canvas).
+  Layout classes: src/html-deck.css. Live components: src/components/menu.
+  Demo data (people, tenants) is illustrative; Billstream content mirrors its Figma file.
+-->
+
+<!-- 1 · Cover -->
+<section class="dark">
+  <p class="hd-small" style="position:absolute;top:calc(60 * var(--u));left:calc(86 * var(--u))">2026</p>
+  <div class="hd-cover" style="top:calc(187 * var(--u));right:calc(520 * var(--u))">
+    <p class="hd-kicker">Case study</p>
+    <h2 class="hd-display">Menu</h2>
+    <p class="hd-sub">Expanding a basic component into one menu for every product</p>
+  </div>
+  <div class="hd-cover" style="top:calc(533 * var(--u))">
+    <p class="hd-small">Aimee Maroney<br>Senior Design Engineer · Uniform Design System</p>
+  </div>
+  <div class="hd-demo" style="position:absolute;left:calc(806 * var(--u));top:calc(110 * var(--u));width:calc(388 * var(--u));height:calc(500 * var(--u))">
+    <span class="hd-anno">Live component</span>
+    <uds-overflow-menu orientation="left" label="More actions" style="align-self:center;width:calc(220 * var(--mu));margin-top:calc(34 * var(--u))">
+      <uds-menu-item>Edit</uds-menu-item>
+      <uds-menu-item>Duplicate</uds-menu-item>
+      <uds-menu-item>Share</uds-menu-item>
+      <uds-menu-item type="destructive">Delete</uds-menu-item>
+    </uds-overflow-menu>
+    <p class="hd-demo-cap">Try it: click <b>⋮</b>, or <kbd>Tab</kbd> <kbd>↓</kbd> <kbd>Enter</kbd></p>
+  </div>
+</section>
+
+<!-- 2 · Where it started -->
+<section>
+  <p class="hd-label">The component</p>
+  <h2 class="hd-title">Where it started: the basic menu</h2>
+  <div class="hd-cols">
+    <div class="hd-stack">
+      <div>
+        <p class="hd-h3">What it was</p>
+        <p class="hd-text">A compact list of actions for a single record, opened from a ⋮ trigger. It was fine for basic selections in data grid rows, card footers and panel headers.</p>
+      </div>
+      <div>
+        <p class="hd-h3">How it behaves</p>
+        <p class="hd-text">Opens on click, <i>Enter</i>, <i>Space</i> or <i>↓</i>. Arrow keys move between items. It closes when you pick an item, press <i>Esc</i> or click outside.</p>
+      </div>
+    </div>
+    <div class="hd-demo">
+      <span class="hd-anno">Overflow menu · Tertiary · Orientation left</span>
+      <div class="hd-demo-row">
+        <uds-overflow-menu orientation="left" label="More actions for Acme Corp v. Smith" style="width:calc(220 * var(--mu))">
+          <uds-menu-item>Edit</uds-menu-item>
+          <uds-menu-item>Duplicate</uds-menu-item>
+          <uds-menu-item>Share</uds-menu-item>
+          <uds-menu-item>Move to folder</uds-menu-item>
+          <uds-menu-item type="destructive">Delete</uds-menu-item>
+        </uds-overflow-menu>
+      </div>
+      <p class="hd-demo-status" data-menu-status>Choose an action to see it here.</p>
+      <p class="hd-demo-cap">Click <b>⋮</b> · <kbd>↑</kbd> <kbd>↓</kbd> move · <kbd>Enter</kbd> choose · <kbd>Esc</kbd> close</p>
+    </div>
+  </div>
+</section>
+
+<!-- 3 · Anatomy & states -->
+<section>
+  <p class="hd-label">Anatomy</p>
+  <h2 class="hd-title">One list item, five states</h2>
+  <div class="hd-cols">
+    <div class="hd-stack">
+      <div>
+        <p class="hd-h3">Menu list item</p>
+        <p class="hd-text">A single-line label with a trailing icon, 32px high, inside a 220px rounded surface with a medium shadow.</p>
+      </div>
+      <ul class="hd-list">
+        <li><b>Default</b> and <b>Hover</b>: white surface, blue on hover</li>
+        <li><b>Selected</b>: light blue surface with a semibold label</li>
+        <li><b>Disabled</b>: shown but can't be chosen, and skipped by the keyboard</li>
+        <li><b>Destructive</b>: red label and red hover, for delete-type actions</li>
+      </ul>
+    </div>
+    <div class="hd-demo">
+      <span class="hd-anno">Menu · always open · selectable</span>
+      <uds-menu selectable label="Item states">
+        <uds-menu-item>Default</uds-menu-item>
+        <uds-menu-item>Hover me</uds-menu-item>
+        <uds-menu-item selected>Selected</uds-menu-item>
+        <uds-menu-item type="disabled">Disabled</uds-menu-item>
+        <uds-menu-item type="destructive">Destructive</uds-menu-item>
+      </uds-menu>
+      <p class="hd-demo-status" data-menu-status></p>
+      <p class="hd-demo-cap">Hover, click, or <kbd>Tab</kbd> in and use <kbd>↑</kbd> <kbd>↓</kbd></p>
+    </div>
+  </div>
+</section>
+
+<!-- 4 · The need -->
+<section>
+  <p class="hd-label">The need</p>
+  <h2 class="hd-title">One product needed a lot more</h2>
+  <div class="hd-cols">
+    <div class="hd-stack">
+      <p class="hd-text">Time's user profile had to let people switch tenants, view the app as another user, change language and manage profile settings, all from one menu.</p>
+      <div>
+        <p class="hd-h3">It needed</p>
+        <ul class="hd-list">
+          <li>A <b>header</b>, and <b>nested lists</b> that slide back and forth in the same panel</li>
+          <li><b>Eyebrow</b> descriptions, and <b>toggles</b> for on/off settings</li>
+          <li><b>Search</b> for long lists of tenants and users</li>
+        </ul>
+      </div>
+      <p class="hd-text">It still shared the same <b>size, states, colours and trigger</b> as the basic menu.</p>
+    </div>
+    <div class="hd-demo">
+      <span class="hd-anno">Time · User profile</span>
+      <uds-menu header="User profile" label="User profile">
+        <uds-menu-item icon="user-single" eyebrow="Viewing as" opens="time-users" reflect="label">Maya Chen</uds-menu-item>
+        <uds-menu-item icon="layers" eyebrow="Tenant" opens="time-tenants" reflect="label">Northwind Legal</uds-menu-item>
+        <uds-menu-item icon="time-clock-circle" eyebrow="Language" opens="time-lang" reflect="label">English (US)</uds-menu-item>
+        <uds-menu-divider></uds-menu-divider>
+        <uds-menu-item toggle checked value="reminders">Email reminders</uds-menu-item>
+        <uds-menu-item toggle value="weekends">Show weekends</uds-menu-item>
+        <uds-menu-panel id="time-users" title="Back" label="View as" selectable searchable scroll-after="4">
+          <uds-menu-item selected description="maya.chen@northwind.example">Maya Chen</uds-menu-item>
+          <uds-menu-item description="joe.smith@northwind.example">Joe Smith</uds-menu-item>
+          <uds-menu-item description="priya.raman@northwind.example">Priya Raman</uds-menu-item>
+          <uds-menu-item description="dan.patel@northwind.example">Daniel Patel</uds-menu-item>
+          <uds-menu-item description="sofia.lopez@northwind.example">Sofia Lopez</uds-menu-item>
+          <uds-menu-item description="ken.ito@northwind.example">Ken Ito</uds-menu-item>
+        </uds-menu-panel>
+        <uds-menu-panel id="time-tenants" title="Back" label="Tenant" selectable searchable scroll-after="4">
+          <uds-menu-item selected description="Production">Northwind Legal</uds-menu-item>
+          <uds-menu-item description="Production">Contoso Partners</uds-menu-item>
+          <uds-menu-item description="Sandbox">Northwind Legal (UAT)</uds-menu-item>
+          <uds-menu-item description="Production">Fabrikam LLP</uds-menu-item>
+          <uds-menu-item description="Sandbox">Fabrikam LLP (Training)</uds-menu-item>
+        </uds-menu-panel>
+        <uds-menu-panel id="time-lang" title="Back" label="Language" selectable>
+          <uds-menu-item selected>English (US)</uds-menu-item>
+          <uds-menu-item>English (UK)</uds-menu-item>
+          <uds-menu-item>Français</uds-menu-item>
+          <uds-menu-item>Deutsch</uds-menu-item>
+          <uds-menu-item>Español</uds-menu-item>
+        </uds-menu-panel>
+      </uds-menu>
+      <p class="hd-demo-status" data-menu-status>Open a row to slide into its list.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 5 · Too bespoke? -->
+<section>
+  <p class="hd-label">The tension</p>
+  <h2 class="hd-title">Expand the component, or is it too bespoke?</h2>
+  <div class="hd-cols">
+    <div class="hd-stack">
+      <p class="hd-text">Expanding a core component for one product's user profile risks bloating it with one-off features. The concern was fair: was this a pattern, or just Time's menu?</p>
+      <div>
+        <p class="hd-h3">Then a second product</p>
+        <p class="hd-text">Around the same time, Billstream needed the same kind of user menu: a header, a user row that slides into a searchable "switch user" list, and information rows with descriptions.</p>
+      </div>
+      <p class="hd-text"><b>Two products with the same need made it a pattern.</b> That was the case for expanding the menu.</p>
+    </div>
+    <div class="hd-demo">
+      <span class="hd-anno">Billstream · User profile</span>
+      <uds-menu header="User Profile" label="User profile">
+        <uds-menu-item icon="user-single" description="hanapark@bstco1.onmicrosoft.com" opens="bs-users" reflect="item">Hana Park</uds-menu-item>
+        <uds-menu-divider></uds-menu-divider>
+        <uds-menu-item static icon="multiple-users" description="Administrator | Biller | Reviewer">User Roles</uds-menu-item>
+        <uds-menu-divider></uds-menu-divider>
+        <uds-menu-item static icon="time-clock-circle" description="Finance | Calgary">Timekeeper Details</uds-menu-item>
+        <uds-menu-divider></uds-menu-divider>
+        <uds-menu-item static icon="layers" description="1.2511.8.0">Version 2511</uds-menu-item>
+        <uds-menu-panel id="bs-users" title="Back" label="Switch user" selectable searchable scroll-after="5">
+          <uds-menu-item description="joesmaith@bstco1.onmicrosoft.com">Joe Smith</uds-menu-item>
+          <uds-menu-item description="mzimmmerman@bstco1.onmicrosoft.com">Maggie Zimmerman</uds-menu-item>
+          <uds-menu-item selected description="hanapark@bstco1.onmicrosoft.com">Hana Park</uds-menu-item>
+          <uds-menu-item description="dan.patel@bstco1.onmicrosoft.com">Daniel Patel</uds-menu-item>
+          <uds-menu-item description="jkavalchuck@bstco1.onmicrosoft.com">Janice Kavalchuck</uds-menu-item>
+          <uds-menu-item description="r.okafor@bstco1.onmicrosoft.com">Ruth Okafor</uds-menu-item>
+        </uds-menu-panel>
+      </uds-menu>
+      <p class="hd-demo-status" data-menu-status>Open “Hana Park” to switch user.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 6 · The problem -->
+<section>
+  <p class="hd-label">The problem</p>
+  <h2 class="hd-title">Every slightly different menu became a new one</h2>
+  <div class="hd-cols">
+    <div class="hd-stack">
+      <p class="hd-text">Researching Time's and Billstream's needs meant looking at how menus were really being used across our products.</p>
+      <p class="hd-text">That's where the bigger problem surfaced: teams were <b>coding or designing a new menu</b> any time they needed something a little more custom.</p>
+      <p class="hd-text">Two user profiles weren't the whole story. The menu needed <b>much more flexibility</b> to allow for custom patterns.</p>
+    </div>
+    <div class="hd-quote">
+      <p class="hd-quote-text">“A little more custom” meant a whole new menu.</p>
+      <div class="hd-quote-flow" aria-label="How a custom need played out">
+        <span>A team needs a slightly different menu</span>
+        <span aria-hidden="true">↓</span>
+        <span>The basic menu can't flex to fit</span>
+        <span aria-hidden="true">↓</span>
+        <span>A new menu is designed and coded</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 7 · Making the case -->
+<section>
+  <p class="hd-label">Making the case</p>
+  <h2 class="hd-title">Same patterns, shared properties</h2>
+  <div class="hd-cols">
+    <div class="hd-stack">
+      <ul class="hd-list">
+        <li><b>Compared the two menus</b>: what they had in common and the navigation patterns they shared</li>
+        <li><b>Mapped the properties</b> each one needed onto a single component</li>
+        <li><b>Tested the component</b> with design system designers and product designers</li>
+        <li><b>Collected feedback</b> on how the component was used in Figma</li>
+      </ul>
+    </div>
+    <div class="hd-table-wrap">
+      <table class="hd-table">
+        <caption class="sr-only">Menu properties needed by Time and Billstream</caption>
+        <thead><tr><th scope="col">Property</th><th scope="col">Time</th><th scope="col">Billstream</th></tr></thead>
+        <tbody><tr><th scope="row">Header<span>Title row at the top of the menu</span></th><td class="yes"><span aria-hidden="true">✓</span><span class="sr-only">Yes</span></td><td class="yes"><span aria-hidden="true">✓</span><span class="sr-only">Yes</span></td></tr><tr><th scope="row">Nested, sliding lists<span>Rows that slide into a sub-list in the same panel</span></th><td class="yes"><span aria-hidden="true">✓</span><span class="sr-only">Yes</span></td><td class="yes"><span aria-hidden="true">✓</span><span class="sr-only">Yes</span></td></tr><tr><th scope="row">Search<span>Filter long lists of users or tenants</span></th><td class="yes"><span aria-hidden="true">✓</span><span class="sr-only">Yes</span></td><td class="yes"><span aria-hidden="true">✓</span><span class="sr-only">Yes</span></td></tr><tr><th scope="row">Eyebrow / description<span>Extra line of text above or below the label</span></th><td class="yes"><span aria-hidden="true">✓</span><span class="sr-only">Yes</span></td><td class="yes"><span aria-hidden="true">✓</span><span class="sr-only">Yes</span></td></tr><tr><th scope="row">Toggle rows<span>On/off settings that apply immediately</span></th><td class="yes"><span aria-hidden="true">✓</span><span class="sr-only">Yes</span></td><td class="no"><span aria-hidden="true">—</span><span class="sr-only">Not needed</span></td></tr><tr><th scope="row">Size, states, colours, trigger<span>Same as the basic menu</span></th><td class="yes"><span aria-hidden="true">✓</span><span class="sr-only">Yes</span></td><td class="yes"><span aria-hidden="true">✓</span><span class="sr-only">Yes</span></td></tr></tbody>
+      </table>
+      <p class="hd-table-note">5 of 6 properties shared, so this was a pattern, not one product's menu.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 8 · The build -->
+<section>
+  <p class="hd-label">The build</p>
+  <h2 class="hd-title">Extend the item, then add slots</h2>
+  <div class="hd-cols" style="grid-template-columns:calc(400 * var(--u)) 1fr">
+    <div class="hd-stack">
+      <p class="hd-text">With engineering, we decided to build it by first extending the <b>menu item</b> sub-component.</p>
+      <ul class="hd-list">
+        <li><b>Menu item</b>: a right icon as a boolean property, or a slot for a toggle child component</li>
+        <li><b>Menu container</b>: slots for a search bar or other custom content</li>
+        <li><b>Header and footer</b>: turned on by booleans, with slots for headings, buttons or other content</li>
+      </ul>
+    </div>
+    <div class="hd-demo" data-playground="properties">
+      <span class="hd-anno">Turn properties on and off · the menu updates live</span>
+      <div class="hd-playground">
+        <div class="hd-controls" data-controls role="group" aria-labelledby="pg-props-title">
+          <p class="hd-controls-title" id="pg-props-title">Properties</p>
+          <button type="button" role="switch" class="hd-switch" data-value="header" aria-checked="true">Header</button>
+          <button type="button" role="switch" class="hd-switch" data-value="eyebrow" aria-checked="true">Eyebrows</button>
+          <button type="button" role="switch" class="hd-switch" data-value="nesting" aria-checked="true">Nesting</button>
+          <button type="button" role="switch" class="hd-switch" data-value="search" aria-checked="true">Search</button>
+          <button type="button" role="switch" class="hd-switch" data-value="toggle" aria-checked="true">Toggle row</button>
+          <button type="button" role="switch" class="hd-switch" data-value="footer" aria-checked="false">Footer</button>
+        </div>
+        <div data-preview></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 9 · Accessibility -->
+<section>
+  <p class="hd-label">Accessibility</p>
+  <h2 class="hd-title">Every path works from the keyboard</h2>
+  <div class="hd-cols">
+    <div class="hd-stack" style="gap:calc(18 * var(--u))">
+      <p class="hd-text">Nesting, search and toggles add new ways to move through a menu. I worked with designers and engineers to make sure keyboard navigation made sense and stayed accessible at every level.</p>
+      <ul class="hd-list" style="gap:calc(10 * var(--u))">
+        <li><b>Arrow keys</b> move through items using a shared keyboard navigation manager. Focus wraps by default, and there's a tab-only mode</li>
+        <li><b>→</b> or <b>Enter</b> slides into a nested list, and <b>←</b> or <b>Esc</b> slides back to the row that opened it</li>
+        <li><b>Toggles</b> are <code>menuitemcheckbox</code> rows and never close the menu</li>
+        <li>Focus returns to the trigger only after <b>keyboard</b> activation, never after a mouse click</li>
+      </ul>
+    </div>
+    <div class="hd-demo">
+      <span class="hd-anno">Try it with only the keyboard</span>
+      <div class="hd-demo-row">
+        <uds-overflow-menu orientation="left" label="User profile" style="width:calc(220 * var(--mu))">
+          <uds-menu-item icon="user-single" eyebrow="Viewing as" opens="kb-users" reflect="label">Maya Chen</uds-menu-item>
+          <uds-menu-item icon="time-clock-circle" eyebrow="Language" opens="kb-lang" reflect="label">English (US)</uds-menu-item>
+          <uds-menu-divider></uds-menu-divider>
+          <uds-menu-item toggle checked value="reminders">Email reminders</uds-menu-item>
+          <uds-menu-panel id="kb-users" title="Back" label="View as" selectable searchable scroll-after="4">
+            <uds-menu-item selected description="maya.chen@northwind.example">Maya Chen</uds-menu-item>
+            <uds-menu-item description="joe.smith@northwind.example">Joe Smith</uds-menu-item>
+            <uds-menu-item description="priya.raman@northwind.example">Priya Raman</uds-menu-item>
+            <uds-menu-item description="dan.patel@northwind.example">Daniel Patel</uds-menu-item>
+            <uds-menu-item description="sofia.lopez@northwind.example">Sofia Lopez</uds-menu-item>
+          </uds-menu-panel>
+          <uds-menu-panel id="kb-lang" title="Back" label="Language" selectable>
+            <uds-menu-item selected>English (US)</uds-menu-item>
+            <uds-menu-item>Français</uds-menu-item>
+            <uds-menu-item>Deutsch</uds-menu-item>
+          </uds-menu-panel>
+        </uds-overflow-menu>
+      </div>
+      <p class="hd-keylog" data-key-log><kbd>Tab</kbd> to the ⋮ button, then <kbd>↓</kbd></p>
+    </div>
+  </div>
+</section>
+
+<!-- 10 · Contribution -->
+<section>
+  <p class="hd-label">Contribution</p>
+  <h2 class="hd-title">Office hours with product engineers</h2>
+  <div class="hd-cols">
+    <div class="hd-stack">
+      <p class="hd-text">During development I ran office hours with the product engineers. I demoed the component, learned which click events they would pass into the menu, and gathered their feedback.</p>
+      <div>
+        <p class="hd-h3">What shaped the API</p>
+        <ul class="hd-list">
+          <li>One <code>udsClick</code> event with the item's value, label and state</li>
+          <li>A separate <code>udsToggleChange</code> event, so toggles don't need extra wiring</li>
+        </ul>
+      </div>
+    </div>
+    <div class="hd-demo">
+      <span class="hd-anno">The events engineers receive</span>
+      <uds-menu header="Display" label="Display settings">
+        <uds-menu-item value="open-profile" right-icon="none">Open profile</uds-menu-item>
+        <uds-menu-item value="switch-tenant" right-icon="none">Switch tenant</uds-menu-item>
+        <uds-menu-item toggle checked value="compact-rows">Compact rows</uds-menu-item>
+        <uds-menu-item value="sign-out" type="destructive" right-icon="none">Sign out</uds-menu-item>
+      </uds-menu>
+      <pre class="hd-code" data-event-log><span class="hd-code-muted">// Click a row or toggle to see its event</span></pre>
+    </div>
+  </div>
+</section>
+
+<!-- 11 · Impact -->
+<section>
+  <p class="hd-label">Impact</p>
+  <h2 class="hd-title">One menu instead of many</h2>
+  <div class="hd-cols">
+    <div class="hd-stack">
+      <p class="hd-text">Teams had been building a new menu component every time they needed a slightly different configuration. Now they only need this one.</p>
+      <ul class="hd-list">
+        <li>Product teams <b>retired their custom menu components</b></li>
+        <li>The same component serves the <b>simplest</b> row actions and the <b>most complex</b> user profile</li>
+        <li>Designers and teams build their own menu patterns while staying aligned with <b>UX principles, accessibility and visual design</b></li>
+      </ul>
+    </div>
+    <div class="hd-demo" data-playground="configs" data-initial="basic">
+      <span class="hd-anno">Same component, any configuration</span>
+      <div class="hd-playground" style=";grid-template-columns:auto auto;justify-content:center;margin-block:auto">
+        <uds-menu data-controls selectable header="Configuration" label="Configuration">
+          <uds-menu-item selected value="basic">Row actions</uds-menu-item>
+          <uds-menu-item value="settings">Settings</uds-menu-item>
+          <uds-menu-item value="profile">User profile</uds-menu-item>
+        </uds-menu>
+        <div data-preview></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 12 · Thank you -->
+<section class="dark">
+  <div class="hd-cover" style="top:calc(302 * var(--u))">
+    <span style="display:block;width:calc(38 * var(--u));height:calc(3 * var(--u));background:var(--accent)"></span>
+    <h2 class="hd-display" style="font-size:calc(66.7 * var(--u))">Thank you</h2>
+    <p class="hd-sub" style="font-size:calc(18.67 * var(--u))">Aimee Maroney</p>
+    <p class="hd-small">Senior Design Engineer</p>
+  </div>
+</section>

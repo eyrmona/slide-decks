@@ -32,11 +32,52 @@ npm run dev      # build, then serve at http://localhost:4321
 
 The landing page title and tagline live in `decks/site.json`.
 
+### HTML decks with live components
+
+A deck can also be written in HTML, which lets slides contain working UI. See
+`decks/menu-component/` for an example.
+
+- Put one `<section>` per slide in `decks/<name>/slides.html` (add `class="dark"` for the dark theme).
+  Slides use a 1280 × 720 canvas styled by `src/html-deck.css`, which matches the converted decks.
+- Images go in `decks/<name>/media/` and are referenced as `media/…`.
+- Register it in `decks/decks.json` with `"dir": "<name>"` instead of `"file"`.
+- Live components live in `src/components/`. The UDS Menu (built from the Figma "🟢 Menu" page):
+
+  ```html
+  <uds-overflow-menu orientation="left" label="More actions">
+    <uds-menu-item>Edit</uds-menu-item>
+    <uds-menu-item type="disabled">Archive</uds-menu-item>
+    <uds-menu-item type="destructive">Delete</uds-menu-item>
+  </uds-overflow-menu>
+
+  <uds-menu selectable>
+    <uds-menu-item selected>Most recent</uds-menu-item>
+    <uds-menu-item>Name</uds-menu-item>
+  </uds-menu>
+  ```
+
+  The expanded menu adds a header and footer, nested panels that slide in place, search,
+  eyebrows/descriptions, leading icons and toggle rows:
+
+  ```html
+  <uds-menu header="User profile" width="280">
+    <uds-menu-item icon="user-single" eyebrow="Viewing as" opens="users" reflect="label">Maya Chen</uds-menu-item>
+    <uds-menu-divider></uds-menu-divider>
+    <uds-menu-item toggle checked>Email reminders</uds-menu-item>
+    <uds-menu-panel id="users" title="Back" label="View as" selectable searchable scroll-after="5">
+      <uds-menu-item selected description="maya@…">Maya Chen</uds-menu-item>
+    </uds-menu-panel>
+    <div slot="footer"><button class="uds-menu-footer-btn">Sign out</button></div>
+  </uds-menu>
+  ```
+
+  The full attribute list is at the top of `src/components/menu/menu.js`.
+
 ## Viewing a deck
 
-- Slides stack vertically and scale to fit the screen, phone to desktop.
-- **Present** (or press `P`, or click a slide) opens full-screen presenter mode:
-  arrow keys / space / swipe to move, `Esc` to exit. Each slide has its own link (`/portfolio/#5`).
+- One slide at a time, scaled to fit the screen from phone to desktop.
+- `←` / `→` (or swipe, or the ‹ › buttons) move between slides. Each slide has its own link (`/portfolio/#5`).
+- **Present** (or `P`) goes full screen. While a live menu has focus, the arrow keys drive the menu instead.
 
 ## How the conversion works
 

@@ -1,0 +1,439 @@
+/* UDS Menu, implemented from the Figma "🟢 Menu" page (Menu, Menu List Item,
+   Menu-Overflow-Menu), the Billstream "User Profile" menu (header, back
+   navigation, search, eyebrow/description rows) and the "🟢 Toggle" page. Sizes are in design pixels times --mu, so the
+   component scales with the slide it sits on (and is 1:1 outside a slide). */
+
+uds-menu,
+uds-overflow-menu {
+  /* Tokens (Figma variables) */
+  --uds-font: 'Manrope', system-ui, sans-serif;
+  --uds-menu-surface: #ffffff;
+  --uds-menu-shadow: rgb(37 36 42 / 0.2);
+  --uds-item-text: #222126;
+  --uds-item-text-disabled: rgb(34 33 38 / 0.16);
+  --uds-item-text-destructive: #bf2832;
+  --uds-item-surface-hover: #bcddff;
+  --uds-item-surface-selected: #daebff;
+  --uds-item-surface-hover-destructive: #fbcdd0;
+  --uds-item-surface-selected-destructive: #fce4e6;
+  --uds-focus: #0353c7;
+  --uds-button-hover: #f7f6f5;
+  --uds-button-active: #0353c7;
+  --uds-button-hover-shadow: rgb(37 36 42 / 0.16);
+  --uds-text-primary: #25242a;
+  --uds-text-secondary: #5d5b6e;
+  --uds-border-light: #d8d8df;
+  --uds-border-disabled: #b7b6c3;
+  --uds-input-border: #5d5b6e;
+
+  --mu: calc(var(--u, 1px) * var(--menu-scale, 1));
+  font-family: var(--uds-font);
+  line-height: normal;
+  text-align: left;
+}
+
+/* ------------------------------------------------------------------ menu */
+.uds-menu {
+  display: flex;
+  flex-direction: column;
+  width: calc(var(--menu-width, 220) * var(--mu));
+  background: var(--uds-menu-surface);
+  border-radius: calc(16 * var(--mu));
+  /* box-shadow/medium: 0 2 8 #25242A33 */
+  box-shadow: 0 calc(2 * var(--mu)) calc(8 * var(--mu)) var(--uds-menu-shadow);
+  overflow: hidden;
+}
+.uds-menu[hidden] { display: none; }
+
+/* Panels share one cell; the active one is in flow, the others slide aside. */
+.uds-menu__viewport { position: relative; overflow: hidden; }
+.uds-menu__panel {
+  width: 100%;
+  background: var(--uds-menu-surface);
+  transition: transform 220ms cubic-bezier(0.2, 0, 0, 1), visibility 0s linear 220ms;
+}
+.uds-menu__panel[data-pos='center'] { position: relative; transform: none; visibility: visible; transition-delay: 0s; }
+.uds-menu__panel[data-pos='left'] { position: absolute; inset: 0 auto auto 0; transform: translateX(-100%); visibility: hidden; }
+.uds-menu__panel[data-pos='right'] { position: absolute; inset: 0 auto auto 0; transform: translateX(100%); visibility: hidden; }
+@media (prefers-reduced-motion: reduce) { .uds-menu__panel { transition: none; } }
+
+/* Header (Billstream: 12 / 8 / 10 / 16 padding, light bottom border) */
+.uds-menu__header {
+  display: flex;
+  align-items: center;
+  gap: calc(8 * var(--mu));
+  padding: calc(12 * var(--mu)) calc(8 * var(--mu)) calc(10 * var(--mu)) calc(16 * var(--mu));
+  border-bottom: max(1px, calc(1 * var(--mu))) solid var(--uds-border-light);
+  margin-bottom: calc(2 * var(--mu));
+}
+.uds-menu__title {
+  font-size: calc(14 * var(--mu));
+  line-height: calc(21 * var(--mu));
+  font-weight: 600;
+  color: var(--uds-text-primary);
+  white-space: nowrap;
+}
+.uds-menu__back {
+  all: unset;
+  box-sizing: border-box;
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: calc(8 * var(--mu));
+  cursor: pointer;
+  border-radius: calc(4 * var(--mu));
+}
+.uds-menu__back:focus-visible::after {
+  content: '';
+  position: absolute;
+  inset: calc(-3 * var(--mu)) calc(-4 * var(--mu));
+  border: max(1px, calc(1 * var(--mu))) solid var(--uds-focus);
+  border-radius: calc(5 * var(--mu));
+}
+.uds-menu__header-icon, .uds-menu-item__lead, .uds-menu__search-icon {
+  flex: none;
+  position: relative;
+  width: calc(16 * var(--mu));
+  height: calc(16 * var(--mu));
+}
+.uds-menu__header-icon img, .uds-menu-item__lead img, .uds-menu__search-icon img {
+  position: absolute; inset: 0; display: block; width: 100%; height: 100%; max-width: none;
+}
+
+/* Body: search + list */
+.uds-menu__body { display: flex; flex-direction: column; gap: calc(4 * var(--mu)); padding: calc(8 * var(--mu)); }
+.uds-menu--rich .uds-menu__body { padding-top: calc(6 * var(--mu)); }
+.uds-menu__list { display: flex; flex-direction: column; gap: calc(4 * var(--mu)); }
+.uds-menu__list--scroll {
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: var(--uds-border-disabled) var(--uds-border-light);
+  margin-right: calc(-8 * var(--mu));
+  padding-right: calc(4 * var(--mu));
+}
+.uds-menu__divider { height: 0; border-top: max(1px, calc(1 * var(--mu))) solid var(--uds-border-light); }
+.uds-menu__divider[hidden] { display: none; }
+.uds-menu__empty {
+  margin: 0;
+  padding: calc(6 * var(--mu)) calc(8 * var(--mu));
+  font-size: calc(14 * var(--mu));
+  color: var(--uds-text-secondary);
+}
+.uds-menu__empty[hidden] { display: none; }
+
+/* Search bar (UDS Search: 40px min height, 8px radius, #5D5B6E border) */
+.uds-menu__search {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: calc(8 * var(--mu));
+  min-height: calc(40 * var(--mu));
+  padding: calc(4 * var(--mu)) calc(8 * var(--mu)) calc(4 * var(--mu)) calc(12 * var(--mu));
+  border: max(1px, calc(1 * var(--mu))) solid var(--uds-input-border);
+  border-radius: calc(8 * var(--mu));
+  background: #fff;
+  cursor: text;
+  margin-bottom: calc(2 * var(--mu));
+}
+.uds-menu__search:focus-within::after {
+  content: '';
+  position: absolute;
+  inset: calc(-1 * var(--mu));
+  border: max(1.5px, calc(2 * var(--mu))) solid var(--uds-focus);
+  border-radius: calc(8 * var(--mu));
+  pointer-events: none;
+}
+.uds-menu__search-input {
+  all: unset;
+  flex: 1;
+  min-width: 0;
+  font-family: var(--uds-font);
+  font-size: calc(14 * var(--mu));
+  line-height: calc(21 * var(--mu));
+  color: var(--uds-text-primary);
+}
+.uds-menu__search-input::placeholder { color: var(--uds-text-primary); opacity: 1; }
+.uds-menu__search-input::-webkit-search-cancel-button { -webkit-appearance: none; }
+
+/* ------------------------------------------------------------------ list item */
+.uds-menu-item {
+  all: unset;
+  box-sizing: border-box;
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: calc(8 * var(--mu));
+  width: 100%;
+  min-height: calc(32 * var(--mu));
+  padding: calc(4 * var(--mu)) calc(8 * var(--mu));
+  border-radius: calc(8 * var(--mu));
+  background: var(--uds-menu-surface);
+  color: var(--uds-item-text);
+  font-family: var(--uds-font);
+  font-size: calc(14 * var(--mu));
+  font-weight: 400;
+  line-height: calc(21 * var(--mu));
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.uds-menu-item[hidden] { display: none; }
+.uds-menu-item--static { cursor: default; }
+.uds-menu-item--static:hover { background: var(--uds-menu-surface); }
+.uds-menu-item__description.uds-menu-item__description--wrap { white-space: pre-line; overflow: visible; }
+.uds-menu:not(.uds-menu--rich) .uds-menu-item { gap: calc(4 * var(--mu)); }
+.uds-menu-item__lead { align-self: flex-start; margin-top: calc(2.5 * var(--mu)); }
+.uds-menu-item__stack { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.uds-menu-item__label,
+.uds-menu-item__eyebrow,
+.uds-menu-item__description {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.uds-menu--rich .uds-menu-item__label { font-weight: 600; }
+.uds-menu--rich [role='menuitemradio'] .uds-menu-item__label,
+.uds-menu--rich .uds-menu__panel:not([data-panel='root']) .uds-menu-item__label { font-weight: 400; }
+.uds-menu--rich [role='menuitemradio'][aria-checked='true'] .uds-menu-item__label { font-weight: 600; }
+.uds-menu-item__eyebrow,
+.uds-menu-item__description {
+  font-size: calc(12 * var(--mu));
+  line-height: calc(16 * var(--mu));
+  color: var(--uds-text-secondary);
+}
+.uds-menu-item__eyebrow { font-weight: 600; letter-spacing: 0.01em; }
+.uds-menu__panel[data-panel='root'] .uds-menu-item__description { color: var(--uds-text-primary); }
+.uds-menu-item__icon {
+  flex: none;
+  position: relative;
+  width: calc(16 * var(--mu));
+  height: calc(16 * var(--mu));
+}
+.uds-menu-item__icon img {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+}
+.uds-menu-item__check { visibility: hidden; }
+.uds-menu-item[aria-checked='true'] .uds-menu-item__check { visibility: visible; }
+
+/* Hover / Selected */
+.uds-menu-item:hover,
+.uds-menu-item[data-active] { background: var(--uds-item-surface-hover); }
+.uds-menu-item[role='menuitemradio'][aria-checked='true'],
+.uds-menu-item[data-selected] {
+  background: var(--uds-item-surface-selected);
+  font-weight: 600;
+}
+.uds-menu-item[role='menuitemradio'][aria-checked='true']:hover,
+.uds-menu-item[role='menuitemradio'][aria-checked='true'][data-active] { background: var(--uds-item-surface-hover); }
+
+/* Destructive */
+.uds-menu-item[data-type='destructive'] { color: var(--uds-item-text-destructive); }
+.uds-menu-item[data-type='destructive']:hover,
+.uds-menu-item[data-type='destructive'][data-active] { background: var(--uds-item-surface-hover-destructive); }
+
+/* Disabled */
+.uds-menu-item[aria-disabled='true'] {
+  color: var(--uds-item-text-disabled);
+  background: var(--uds-menu-surface);
+  cursor: default;
+}
+.uds-menu-item[aria-disabled='true'] img { opacity: 0.16; }
+
+/* Focus ring (.Focus-Ring: 1px #0353C7, 2px outside, radius 5) */
+.uds-menu-item:focus-visible::after {
+  content: '';
+  position: absolute;
+  inset: calc(-2 * var(--mu));
+  border: max(1px, calc(1 * var(--mu))) solid var(--uds-focus);
+  border-radius: calc(5 * var(--mu));
+  pointer-events: none;
+}
+.uds-menu__list--scroll .uds-menu-item:focus-visible::after { inset: 0; }
+
+/* ------------------------------------------------------------------ toggle (UDS Toggle, Size=Small) */
+.uds-toggle {
+  flex: none;
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: calc(40 * var(--mu));
+  height: calc(20 * var(--mu));
+  border-radius: calc(16 * var(--mu));
+}
+/* Each part is shown only in its state; the selectors below are all
+   .uds-toggle-scoped so no generic img rule can reveal a hidden part. */
+.uds-toggle img { max-width: none; }
+.uds-toggle .uds-toggle__off { display: block; position: absolute; inset: 0; width: 100%; height: 100%; }
+.uds-toggle .uds-toggle__knob-off { display: none; width: calc(12 * var(--mu)); height: calc(12 * var(--mu)); }
+.uds-toggle .uds-toggle__check,
+.uds-toggle .uds-toggle__knob-on { display: none; }
+.uds-toggle .uds-toggle__check img { display: block; }
+/* Off · hover */
+.uds-menu-item:hover .uds-toggle,
+.uds-menu-item[data-active] .uds-toggle {
+  background: #d8d8df;
+  border: max(1px, calc(1 * var(--mu))) solid #908fa1;
+  padding: calc(2 * var(--mu)) calc(4 * var(--mu));
+  box-sizing: border-box;
+}
+.uds-menu-item:hover .uds-toggle__off,
+.uds-menu-item[data-active] .uds-toggle__off { display: none; }
+.uds-menu-item:hover .uds-toggle__knob-off,
+.uds-menu-item[data-active] .uds-toggle__knob-off { display: block; }
+/* On */
+.uds-menu-item[aria-checked='true'] .uds-toggle {
+  background: #0353c7;
+  border: 0;
+  padding: calc(2 * var(--mu));
+  box-sizing: border-box;
+}
+.uds-menu-item[aria-checked='true']:hover .uds-toggle,
+.uds-menu-item[aria-checked='true'][data-active] .uds-toggle { background: #0a4896; }
+.uds-menu-item[aria-checked='true'] .uds-toggle__off,
+.uds-menu-item[aria-checked='true'] .uds-toggle__knob-off { display: none; }
+.uds-menu-item[aria-checked='true'] .uds-toggle__check {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+}
+.uds-menu-item[aria-checked='true'] .uds-toggle__check img { width: calc(10 * var(--mu)); height: calc(10.2 * var(--mu)); }
+.uds-menu-item[aria-checked='true'] .uds-toggle__knob-on { display: block; width: calc(16 * var(--mu)); height: calc(16 * var(--mu)); }
+/* A toggle row keeps the white surface; only the switch reflects state. */
+.uds-menu-item[role='menuitemcheckbox'][aria-checked='true'] { background: var(--uds-menu-surface); font-weight: 400; }
+.uds-menu-item[role='menuitemcheckbox']:hover,
+.uds-menu-item[role='menuitemcheckbox'][data-active] { background: var(--uds-item-surface-hover); }
+
+/* ------------------------------------------------------------------ footer */
+.uds-menu__footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: calc(8 * var(--mu));
+  padding: calc(8 * var(--mu)) calc(8 * var(--mu)) calc(8 * var(--mu)) calc(16 * var(--mu));
+  border-top: max(1px, calc(1 * var(--mu))) solid var(--uds-border-light);
+}
+.uds-menu__footer > * { margin: 0; }
+.uds-menu-footer-text { flex: 1; font-size: calc(12 * var(--mu)); color: var(--uds-text-secondary); }
+.uds-menu-footer-btn {
+  all: unset;
+  box-sizing: border-box;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  min-height: calc(32 * var(--mu));
+  padding: 0 calc(12 * var(--mu));
+  border-radius: calc(8 * var(--mu));
+  font-family: var(--uds-font);
+  font-size: calc(14 * var(--mu));
+  font-weight: 600;
+  color: var(--uds-focus);
+  cursor: pointer;
+}
+.uds-menu-footer-btn:hover { background: var(--uds-button-hover); }
+.uds-menu-footer-btn:focus-visible::after {
+  content: '';
+  position: absolute;
+  inset: calc(-2 * var(--mu));
+  border: max(1px, calc(1 * var(--mu))) solid var(--uds-focus);
+  border-radius: calc(10 * var(--mu));
+}
+
+/* ------------------------------------------------------------------ overflow menu
+   Figma "Menu-Overflow-Menu": a 32px button (Tertiary or Secondary) with a
+   16px icon. States: Default, Hover, Active (menu open) and Disabled. */
+uds-overflow-menu {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-end;
+  position: relative;
+  vertical-align: top;
+}
+uds-overflow-menu[orientation='left'] { align-items: flex-start; }
+
+.uds-overflow__trigger {
+  all: unset;
+  box-sizing: border-box;
+  position: relative;
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: calc(32 * var(--mu));
+  height: calc(32 * var(--mu));
+  border-radius: calc(8 * var(--mu));
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+.uds-overflow__icon {
+  position: relative;
+  width: calc(16 * var(--mu));
+  height: calc(16 * var(--mu));
+}
+.uds-overflow__icon img {
+  position: absolute;
+  inset: 0;
+  display: none;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+}
+.uds-overflow__trigger .is-default { display: block; }
+
+/* Tertiary: transparent → #F7F6F5 + shadow on hover → #0353C7 when open */
+.uds-overflow__trigger[data-type='tertiary'] { background: rgb(255 255 255 / 0); }
+/* Secondary: tinted fill with a 1px blue outline 3px outside, radius 11 */
+.uds-overflow__trigger[data-type='secondary'] { background: rgb(194 184 175 / 0.35); }
+.uds-overflow__trigger[data-type='secondary']::before {
+  content: '';
+  position: absolute;
+  inset: calc(-3 * var(--mu));
+  border: max(1px, calc(1 * var(--mu))) solid var(--uds-focus);
+  border-radius: calc(11 * var(--mu));
+  pointer-events: none;
+}
+
+.uds-overflow__trigger:hover:not([aria-expanded='true']):not(:disabled),
+.uds-overflow__trigger.is-hover-preview {
+  background: var(--uds-button-hover);
+  filter: drop-shadow(0 calc(2 * var(--mu)) calc(2 * var(--mu)) var(--uds-button-hover-shadow));
+}
+.uds-overflow__trigger:hover:not([aria-expanded='true']):not(:disabled) .is-default,
+.uds-overflow__trigger.is-hover-preview .is-default { display: none; }
+.uds-overflow__trigger:hover:not([aria-expanded='true']):not(:disabled) .is-hover,
+.uds-overflow__trigger.is-hover-preview .is-hover { display: block; }
+
+.uds-overflow__trigger[aria-expanded='true'] { background: var(--uds-button-active); filter: none; }
+.uds-overflow__trigger[aria-expanded='true'] img { display: none; }
+.uds-overflow__trigger[aria-expanded='true'] .is-active { display: block; }
+
+.uds-overflow__trigger:disabled { cursor: default; }
+.uds-overflow__trigger[data-type='secondary']:disabled { background: rgb(216 216 223 / 0.32); }
+.uds-overflow__trigger[data-type='secondary']:disabled::before { display: none; }
+.uds-overflow__trigger:disabled img { display: none; }
+.uds-overflow__trigger:disabled .is-disabled { display: block; }
+
+.uds-overflow__trigger:focus-visible::after {
+  content: '';
+  position: absolute;
+  inset: calc(-3 * var(--mu));
+  border: max(1px, calc(1 * var(--mu))) solid var(--uds-focus);
+  border-radius: calc(11 * var(--mu));
+}
+
+/* Dropdown: 4px below the trigger (top 36). Orientation=Right (default)
+   lines the menu's right edge up with the trigger, so it opens toward the
+   left; Orientation=Left lines up the left edges and opens toward the right. */
+uds-overflow-menu .uds-menu {
+  position: absolute;
+  top: calc(36 * var(--mu));
+  right: 0;
+  left: auto;
+  z-index: 5;
+}
+uds-overflow-menu[orientation='left'] .uds-menu { left: 0; right: auto; }

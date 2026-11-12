@@ -1,0 +1,390 @@
+/* Layout for HTML-authored decks, matching the visual style of the
+   converted decks (CLI case study): 1280 × 720 canvas, 86px margins,
+   Inter body, Poppins headings, burnt-orange accent.
+   Every length is design pixels × var(--u), so slides scale as one. */
+
+.hd {
+  --ink: #1a1a1a;
+  --body: #3d3d3a;
+  --muted: #5c5c57;
+  --accent: #ac4d15;
+  --rule: #d8d5ce;
+  --panel: #e7e4de;
+  position: absolute;
+  inset: 0;
+  padding: calc(60 * var(--u)) calc(86 * var(--u)) 0;
+  font-family: 'Inter', sans-serif;
+  color: var(--ink);
+  font-size: calc(18.67 * var(--u));
+  line-height: 1.5;
+}
+.hd.dark {
+  --ink: #ffffff;
+  --body: #d9d6d0;
+  --muted: #a8a8a8;
+  --accent: #ea8a53;
+  --rule: #3a3936;
+  --panel: #262523;
+}
+.hd *, .hd *::before, .hd *::after { box-sizing: border-box; }
+.hd p, .hd h2, .hd h3, .hd ul { margin: 0; }
+
+/* Section label + short bar + title */
+.hd-label {
+  display: flex;
+  align-items: center;
+  height: calc(31 * var(--u));
+  font-size: calc(16 * var(--u));
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.hd-label::after {
+  content: '';
+  position: absolute;
+  left: calc(86 * var(--u));
+  top: calc(92 * var(--u));
+  width: calc(38 * var(--u));
+  height: calc(3 * var(--u));
+  background: var(--accent);
+}
+.hd-title {
+  margin-top: calc(17 * var(--u)) !important;
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700;
+  font-size: calc(40 * var(--u));
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+}
+.hd-lede {
+  margin-top: calc(10 * var(--u)) !important;
+  max-width: calc(960 * var(--u));
+  color: var(--body);
+}
+
+/* Footer accent bar */
+.hd::after {
+  content: '';
+  position: absolute;
+  left: calc(86 * var(--u));
+  top: calc(659 * var(--u));
+  width: calc(38 * var(--u));
+  height: calc(3 * var(--u));
+  background: var(--accent);
+}
+
+/* Title & closing slides */
+.hd-cover { position: absolute; left: calc(86 * var(--u)); right: calc(86 * var(--u)); }
+.hd-kicker {
+  font-size: calc(16 * var(--u));
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--accent);
+  padding-bottom: calc(14 * var(--u));
+  position: relative;
+}
+.hd-kicker::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: calc(38 * var(--u));
+  height: calc(3 * var(--u));
+  background: var(--accent);
+}
+.hd-display {
+  margin-top: calc(16 * var(--u)) !important;
+  padding-bottom: calc(18 * var(--u));
+  border-bottom: max(1px, calc(1 * var(--u))) solid var(--rule);
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700;
+  font-size: calc(77 * var(--u));
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+.hd-sub {
+  margin-top: calc(20 * var(--u)) !important;
+  font-size: calc(24 * var(--u));
+  line-height: 1.5;
+  color: var(--ink);
+}
+.hd-small { font-size: calc(16 * var(--u)); color: var(--muted); line-height: 1.6; }
+
+/* Two-column body: text left, live component right */
+.hd-cols {
+  display: grid;
+  grid-template-columns: calc(470 * var(--u)) 1fr;
+  gap: calc(48 * var(--u));
+  margin-top: calc(32 * var(--u));
+  height: calc(470 * var(--u));
+}
+.hd-cols > * { min-width: 0; }
+
+.hd-h3 {
+  font-size: calc(15.33 * var(--u));
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+.hd-text { color: var(--body); }
+.hd-stack { display: flex; flex-direction: column; gap: calc(22 * var(--u)); }
+.hd-stack > div { display: flex; flex-direction: column; gap: calc(4 * var(--u)); }
+
+.hd-list { list-style: none; padding: 0; display: flex; flex-direction: column; gap: calc(14 * var(--u)); color: var(--body); }
+.hd-list li { position: relative; padding-left: calc(30 * var(--u)); }
+.hd-list li::before { content: '—'; position: absolute; left: 0; color: var(--accent); font-weight: 700; }
+
+/* Panel that hosts a live component */
+.hd-demo {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  gap: calc(16 * var(--u));
+  padding: calc(28 * var(--u));
+  background: var(--panel);
+  border-radius: calc(12 * var(--u));
+  /* One size for every live menu in the deck (220px basic width × this scale). */
+  --menu-scale: 1.15;
+}
+.hd-demo-row { display: flex; gap: calc(40 * var(--u)); align-items: flex-start; justify-content: center; width: 100%; }
+.hd .hd-demo-status + .hd-demo-cap { margin-top: 0; }
+.hd .hd-demo-cap {
+  margin-top: auto;
+  font-size: calc(14 * var(--u));
+  color: var(--muted);
+  text-align: center;
+}
+.hd-demo-cap kbd {
+  font-family: 'Inter', sans-serif;
+  font-size: calc(12.5 * var(--u));
+  padding: calc(1 * var(--u)) calc(6 * var(--u));
+  border-radius: calc(4 * var(--u));
+  border: max(1px, calc(1 * var(--u))) solid var(--rule);
+  background: rgb(255 255 255 / 0.5);
+  color: var(--ink);
+}
+.dark .hd-demo-cap kbd { background: rgb(255 255 255 / 0.06); }
+.hd .hd-demo-status {
+  margin-top: auto;
+  font-size: calc(14 * var(--u));
+  color: var(--muted);
+  min-height: calc(21 * var(--u));
+}
+.hd .hd-demo-status b { color: var(--ink); font-weight: 600; }
+.hd-anno {
+  font-size: calc(13 * var(--u));
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* Content still needed from the author */
+.hd-todo {
+  position: relative;
+  padding: calc(14 * var(--u)) calc(16 * var(--u));
+  border: max(1px, calc(1.5 * var(--u))) dashed var(--accent);
+  border-radius: calc(8 * var(--u));
+  color: var(--muted);
+  font-size: calc(16 * var(--u));
+  line-height: 1.5;
+}
+.hd-todo::before {
+  content: 'Needs your input';
+  display: block;
+  margin-bottom: calc(4 * var(--u));
+  font-size: calc(12 * var(--u));
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+/* Event payload log (shown in monospace like a console) */
+.hd .hd-code {
+  align-self: stretch;
+  margin-top: auto;
+  min-height: calc(118 * var(--u));
+  padding: calc(12 * var(--u)) calc(14 * var(--u));
+  border-radius: calc(8 * var(--u));
+  background: #1a1a1a;
+  color: #d9d6d0;
+  font-family: 'Cousine', 'Courier New', monospace;
+  font-size: calc(13 * var(--u));
+  line-height: 1.5;
+  white-space: pre;
+  overflow: hidden;
+}
+.hd-code-ev { color: #ea8a53; font-weight: 700; }
+.hd-code-muted { color: #8c8a85; }
+
+/* Keyboard log */
+.hd .hd-keylog {
+  margin-top: auto;
+  font-size: calc(15 * var(--u));
+  color: var(--body);
+  min-height: calc(26 * var(--u));
+}
+
+/* Playground: controls on the left, live preview on the right */
+.hd-playground {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: calc(28 * var(--u));
+  align-items: start;
+  width: 100%;
+}
+.hd-playground [data-preview] { display: flex; justify-content: center; }
+.hd code {
+  font-family: 'Cousine', 'Courier New', monospace;
+  font-size: 0.85em;
+  padding: 0 calc(4 * var(--u));
+  border-radius: calc(4 * var(--u));
+  background: rgb(0 0 0 / 0.06);
+}
+
+/* Live components are designed for light surfaces, so demo panels on dark
+   slides (the cover, which is also the home-page thumbnail) are white. */
+.hd.dark .hd-demo {
+  --ink: #1a1a1a;
+  --body: #3d3d3a;
+  --muted: #5c5c57;
+  --rule: #d8d5ce;
+  background: #ffffff;
+  color: var(--ink);
+}
+.hd.dark .hd-demo-cap kbd { background: rgb(0 0 0 / 0.04); }
+
+/* Comparison table */
+.hd-table-wrap {
+  align-self: start;
+  padding: calc(6 * var(--u)) calc(24 * var(--u)) calc(14 * var(--u));
+  background: #ffffff;
+  border-radius: calc(12 * var(--u));
+}
+.hd-table { width: 100%; border-collapse: collapse; font-size: calc(16 * var(--u)); line-height: 1.35; }
+.hd-table th, .hd-table td {
+  padding: calc(7 * var(--u)) calc(8 * var(--u));
+  border-bottom: max(1px, calc(1 * var(--u))) solid var(--rule);
+  text-align: center;
+  vertical-align: middle;
+}
+.hd-table thead th {
+  font-size: calc(13 * var(--u));
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--accent);
+  border-bottom-width: max(1.5px, calc(2 * var(--u)));
+}
+.hd-table thead th:first-child, .hd-table tbody th { text-align: left; padding-left: 0; }
+.hd-table tbody th { font-weight: 600; color: var(--ink); }
+.hd-table tbody th span {
+  display: block;
+  font-weight: 400;
+  font-size: calc(13 * var(--u));
+  line-height: 1.35;
+  color: var(--muted);
+}
+.hd-table td { width: calc(110 * var(--u)); font-size: calc(18 * var(--u)); font-weight: 700; }
+.hd-table td.yes { color: var(--accent); }
+.hd-table td.no { color: var(--rule); }
+.hd-table tbody tr:last-child > * { border-bottom: 0; }
+.hd-table-note {
+  margin-top: calc(12 * var(--u)) !important;
+  font-size: calc(14 * var(--u));
+  color: var(--muted);
+}
+.hd .sr-only {
+  position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+
+/* Pull statement with a short flow */
+.hd-quote {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: calc(28 * var(--u));
+  padding: calc(36 * var(--u)) calc(40 * var(--u));
+  background: var(--panel);
+  border-left: calc(4 * var(--u)) solid var(--accent);
+  border-radius: 0 calc(12 * var(--u)) calc(12 * var(--u)) 0;
+}
+.hd .hd-quote-text {
+  font-family: 'Poppins', sans-serif;
+  font-weight: 700;
+  font-size: calc(30 * var(--u));
+  line-height: 1.3;
+  color: var(--ink);
+}
+.hd-quote-flow {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: calc(6 * var(--u));
+  font-size: calc(16 * var(--u));
+  color: var(--body);
+}
+.hd-quote-flow span:not([aria-hidden]) {
+  padding: calc(8 * var(--u)) calc(14 * var(--u));
+  background: #ffffff;
+  border-radius: calc(8 * var(--u));
+}
+.hd-quote-flow span[aria-hidden] { padding-left: calc(14 * var(--u)); color: var(--accent); font-weight: 700; }
+
+/* Plain property switches (used to drive a live preview) */
+.hd-controls {
+  display: flex;
+  flex-direction: column;
+  gap: calc(4 * var(--u));
+  min-width: calc(200 * var(--u));
+  padding: calc(14 * var(--u)) calc(16 * var(--u));
+  border: max(1px, calc(1 * var(--u))) solid var(--rule);
+  border-radius: calc(10 * var(--u));
+}
+.hd .hd-controls-title {
+  margin-bottom: calc(6 * var(--u));
+  font-size: calc(13 * var(--u));
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.hd-switch {
+  all: unset;
+  box-sizing: border-box;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: calc(16 * var(--u));
+  padding: calc(5 * var(--u)) 0;
+  font-family: 'Inter', sans-serif;
+  font-size: calc(16 * var(--u));
+  color: var(--ink);
+  cursor: pointer;
+}
+.hd-switch::after {
+  content: '';
+  flex: none;
+  width: calc(36 * var(--u));
+  height: calc(20 * var(--u));
+  border-radius: calc(10 * var(--u));
+  background:
+    radial-gradient(circle at calc(10 * var(--u)) 50%, #ffffff calc(7 * var(--u)), transparent calc(7.5 * var(--u))),
+    #b9b5ad;
+  transition: background 150ms ease;
+}
+.hd-switch[aria-checked='true']::after {
+  background:
+    radial-gradient(circle at calc(26 * var(--u)) 50%, #ffffff calc(7 * var(--u)), transparent calc(7.5 * var(--u))),
+    #0353c7; /* UDS toggle "on" (color/uniform/cerulean/800) */
+}
+.hd-switch:focus-visible { outline: max(1.5px, calc(2 * var(--u))) solid #0353c7; outline-offset: calc(3 * var(--u)); border-radius: calc(4 * var(--u)); }
+@media (prefers-reduced-motion: reduce) { .hd-switch::after { transition: none; } }

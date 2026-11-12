@@ -24,6 +24,8 @@
     prevBtn.disabled = current === 0;
     nextBtn.disabled = current === frames.length - 1;
     if (updateHash) history.replaceState(null, '', `#${current + 1}`);
+    // Lets live components on the slide restore their starting state.
+    frames[current].dispatchEvent(new CustomEvent('deck-slide-shown', { bubbles: true }));
   }
 
   function fromHash() {
@@ -49,7 +51,7 @@
 
   // In full screen, clicking the slide advances (left third goes back).
   stage.addEventListener('click', (e) => {
-    if (!document.fullscreenElement || e.target.closest('a')) return;
+    if (!document.fullscreenElement || e.target.closest('a, button, [role="menu"], uds-menu, uds-overflow-menu')) return;
     const r = stage.getBoundingClientRect();
     show(current + (e.clientX - r.left < r.width / 3 ? -1 : 1));
   });
@@ -61,8 +63,12 @@
     t instanceof Element && (t.isContentEditable || t.matches('input, textarea, select'));
 
   document.addEventListener('keydown', (e) => {
-    if (e.metaKey || e.ctrlKey || e.altKey || isTyping(e.target)) return;
+    // Interactive components on a slide (e.g. a menu) handle their own keys
+    // and mark them handled.
+    if (e.defaultPrevented || e.metaKey || e.ctrlKey || e.altKey || isTyping(e.target)) return;
     const k = e.key;
+    // Space on a focused button or link activates it; don't also change slide.
+    if (k === ' ' && e.target instanceof Element && e.target.closest('button, a, [role^="menuitem"]')) return;
     if (k === 'ArrowRight' || k === 'PageDown' || k === ' ') show(current + 1);
     else if (k === 'ArrowLeft' || k === 'PageUp') show(current - 1);
     else if (k === 'Home') show(0);

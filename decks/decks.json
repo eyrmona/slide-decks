@@ -1,0 +1,16 @@
+[
+  {
+    "file": "portfolio.pptx",
+    "slug": "portfolio",
+    "title": "Portfolio",
+    "description": "Senior Design Engineer portfolio: background, approach, and selected work.",
+    "date": "2026"
+  },
+  {
+    "file": "cli-case-study.pptx",
+    "slug": "cli-case-study",
+    "title": "create-intapp-app CLI",
+    "description": "Case study: CLI scaffolding and AI-ready infrastructure for Intapp product design.",
+    "date": "2026"
+  }
+]

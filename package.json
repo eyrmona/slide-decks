@@ -1,0 +1,16 @@
+{
+  "name": "slide-decks",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "A personal library of slide decks, converted from .pptx into responsive web pages.",
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "serve": "node scripts/serve.mjs",
+    "dev": "node scripts/build.mjs && node scripts/serve.mjs"
+  },
+  "dependencies": {
+    "@xmldom/xmldom": "^0.9.12",
+    "jszip": "^3.10.2"
+  }
+}

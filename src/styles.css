@@ -371,3 +371,47 @@ body.deck-page {
 .enh-lightbox__close:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
 @keyframes enh-fade { from { opacity: 0; } }
 @media (prefers-reduced-motion: reduce) { .enh-lightbox { animation: none; } }
+
+/* Live terminal (enhance: terminal) */
+.enh-term {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column;
+  background: rgb(45 49 61);
+  color: rgb(232 232 230);
+  font-family: 'Cousine', ui-monospace, 'SF Mono', Menlo, monospace;
+  font-size: calc(9.6 * var(--u));
+  line-height: 1.5;
+  border-radius: calc(6 * var(--u)) calc(6 * var(--u)) 0 0;
+  overflow: hidden;
+  text-align: left;
+}
+.enh-term__bar {
+  flex: none; display: flex; align-items: center; gap: calc(6 * var(--u));
+  height: calc(23 * var(--u)); padding: 0 calc(8 * var(--u));
+  background: rgb(36 38 46);
+  border-bottom: calc(0.6 * var(--u)) solid rgb(20 21 26);
+  font-family: -apple-system, BlinkMacSystemFont, 'Inter', sans-serif;
+  font-size: calc(8.6 * var(--u)); font-weight: 600; color: rgb(170 172 178);
+}
+.enh-term__bar i { flex: none; width: calc(9.5 * var(--u)); height: calc(9.5 * var(--u)); border-radius: 50%; background: #ff5f57; }
+.enh-term__bar i:nth-child(2) { background: #febc2e; }
+.enh-term__bar i:nth-child(3) { background: #28c840; margin-right: calc(10 * var(--u)); }
+.enh-term__bar span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.enh-term__body { flex: 1; min-height: 0; overflow: hidden; padding: calc(8 * var(--u)) calc(6 * var(--u)); }
+.enh-term__lines > div { white-space: pre-wrap; overflow-wrap: anywhere; }
+.enh-term .t-b { font-weight: 700; }
+.enh-term .t-accent { color: rgb(124 207 196); }
+.enh-term .t-dim { color: rgb(140 144 152); }
+.enh-term .t-dim b { color: rgb(232 232 230); font-weight: 400; }
+.enh-term .t-ok { color: rgb(110 214 140); }
+.enh-term .t-rule { display: block; width: 44%; height: calc(14 * var(--u)); border-top: calc(0.8 * var(--u)) solid rgb(140 144 152); margin-top: calc(7 * var(--u)); margin-bottom: calc(-7 * var(--u)); }
+.enh-term .t-cursor {
+  display: inline-block; width: 0.6em; height: 1.15em; vertical-align: text-bottom;
+  background: rgb(232 232 230); animation: enh-blink 1s steps(1) infinite;
+}
+@keyframes enh-blink { 50% { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .enh-term .t-cursor { animation: none; } }
+
+/* "Not a fit" marker on cards (enhance: blocked) */
+.slide .enh-blocked { color: rgb(172 77 21); }
+.slide .enh-blocked svg { display: block; width: 100%; height: 100%; }

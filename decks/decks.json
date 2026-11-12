@@ -15,7 +15,11 @@
     "slug": "cli-case-study",
     "title": "create-intapp-app CLI",
     "description": "Case study: CLI scaffolding and AI-ready infrastructure for Intapp product design.",
-    "date": "2026"
+    "date": "2026",
+    "enhance": {
+      "3": "terminal:create-intapp-app",
+      "4": "blocked"
+    }
   },
   {
     "dir": "menu-component",

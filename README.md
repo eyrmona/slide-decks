@@ -44,6 +44,11 @@ A converted slide can be made interactive from `decks/decks.json` without changi
   clicking a picture to bring it forward). Clicking the front picture opens it full screen; `Esc` closes it.
 - `zoom`: every picture on the slide opens full screen when clicked (or with `Enter`); `Esc` closes it.
 
+- `terminal:<script>`: the slide's terminal screenshot becomes a live terminal that plays a scripted CLI
+  session and loops (e.g. `"3": "terminal:create-intapp-app"`). Scripts live in `TERMINAL_SCRIPTS`.
+
+- `blocked`: each card on the slide (a filled box) gets a "not allowed" icon in its top-right corner.
+
 Combine them per slide, e.g. `"enhance": { "5": "carousel", "6": "zoom" }`. Code: `src/enhance.js`.
 
 ### HTML decks with live components

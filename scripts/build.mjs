@@ -128,6 +128,7 @@ async function main() {
   await fs.copyFile(path.join(srcDir, 'html-deck.js'), path.join(dist, 'html-deck.js'));
   await fs.copyFile(path.join(srcDir, 'enhance.js'), path.join(dist, 'enhance.js'));
   await fs.copyFile(path.join(srcDir, 'favicon.png'), path.join(dist, 'favicon.png'));
+  await fs.cp(path.join(srcDir, 'enhance-data'), path.join(dist, 'enhance-data'), { recursive: true });
   await fs.cp(path.join(srcDir, 'components'), path.join(dist, 'components'), { recursive: true });
 
   const built = [];

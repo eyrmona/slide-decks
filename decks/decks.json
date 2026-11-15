@@ -8,6 +8,8 @@
     "enhance": {
       "5": "carousel",
       "6": "zoom",
+      "13": "tokens",
+      "14": "iconsearch",
       "19": "terminal:create-intapp-app:outline"
     }
   },

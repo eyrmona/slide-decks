@@ -48,6 +48,12 @@ A converted slide can be made interactive from `decks/decks.json` without changi
   session and loops (e.g. `"3": "terminal:create-intapp-app"`). Scripts live in `TERMINAL_SCRIPTS`.
   Add `:outline` for a white rounded window edge (used on dark slides, e.g. Portfolio slide 19).
 
+- `iconsearch`: Portfolio slide 14 only. The UDS Icon Library panel in the screenshot becomes a live replica
+  that types searches and filters the real icon list, as in IDS-Icons. Icon names and the SVGs it shows are
+  in `src/enhance-data/ids-icons.json`.
+- `tokens`: Portfolio slide 13 only. The UDS Token Visualizer in the screenshot becomes live on the Button tokens: a token is
+  clicked to show what references it, then dark mode swaps every value. Data is generated with the app's own
+  `tokenUtils.js` into `src/enhance-data/ids-tokens.json`.
 - `blocked`: each card on the slide (a filled box) gets a "not allowed" icon in its top-right corner.
 
 Combine them per slide, e.g. `"enhance": { "5": "carousel", "6": "zoom" }`. Code: `src/enhance.js`.

@@ -376,7 +376,307 @@
     if (sr && names.length) sr.textContent += ` Marked as not a fit: ${names.join(', ')}.`;
   }
 
-  const ENHANCERS = { carousel, zoom, terminal, blocked };
+  // ---------------------------------------------------------------- iconsearch
+  // Portfolio slide 14: the UDS Icon Library panel in the Storybook screenshot
+  // becomes live. A search is typed and the real icon list filters as it
+  // would in IDS-Icons (src/icon-card.js): substring match on the class name,
+  // a clear button while there's a query, a "No results" state, and skeleton
+  // icons while SVGs load. Data: enhance-data/ids-icons.json (all names, plus
+  // the SVGs the scripted searches show).
+  const ICONSEARCH = {
+    image: { w: 2048, h: 1052 },          // screenshot size in px
+    panel: { x: 531, y: 171, w: 1405 },    // the icon-card panel within it
+    version: 'v2.20.0',
+    queries: ['calendar', 'user', 'chart'],
+    shown: 20,
+  };
+
+  let fontsAdded = false;
+  function addIconFonts() {
+    if (fontsAdded) return;
+    fontsAdded = true;
+    const l = document.createElement('link');
+    l.rel = 'stylesheet';
+    l.href = 'https://fonts.googleapis.com/css2?family=Manrope:wght@400;600&family=Source+Code+Pro:wght@400&display=swap';
+    document.head.append(l);
+  }
+
+  function iconsearch(frame) {
+    const cfg = ICONSEARCH;
+    const slide = frame.querySelector('.slide');
+    const el = pictures(slide)[0];
+    const clip = el?.querySelector('.pic-clip');
+    const img = clip?.querySelector('img');
+    if (!img) return;
+    makeInteractive(slide);
+    addIconFonts();
+    const base = document.querySelector('script[src$="enhance.js"]')?.src.replace(/enhance\.js.*$/, '') || '../';
+
+    // A layer laid over the picture exactly as the image is, so the replica can
+    // be positioned in screenshot pixels (1 --ip = 1 screenshot px).
+    const boxW = num(el.getAttribute('style'), 'width');
+    const imgW = boxW * (parseFloat(img.style.width) / 100);
+    const layer = document.createElement('div');
+    layer.className = 'enh-is-layer';
+    layer.setAttribute('role', 'img');
+    layer.setAttribute('aria-label', `Animated UDS Icon Library: searching ${cfg.queries.map((q) => `“${q}”`).join(', ')} filters the icon list as you type.`);
+    Object.assign(layer.style, { left: img.style.left, top: img.style.top, width: img.style.width, height: img.style.height });
+    layer.style.setProperty('--ip', u(imgW / cfg.image.w));
+    const pct = (v, of) => `${(v / of) * 100}%`;
+    layer.innerHTML = `
+      <div class="enh-is" aria-hidden="true" style="left:${pct(cfg.panel.x, cfg.image.w)};top:${pct(cfg.panel.y, cfg.image.h)};width:${pct(cfg.panel.w, cfg.image.w)}">
+        <div class="enh-is__header"><h3>UDS Icon Library</h3><span class="enh-is__version">${cfg.version}</span></div>
+        <div class="enh-is__search">
+          <span class="enh-is__search-icon"></span>
+          <span class="enh-is__input"><span class="enh-is__placeholder">Search for an icon...</span><span class="enh-is__text"></span><span class="enh-is__caret"></span></span>
+          <span class="enh-is__clear" hidden><svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></span>
+        </div>
+        <div class="enh-is__results"></div>
+      </div>`;
+    layer.hidden = true;
+    clip.append(layer);
+
+    const $ = (s) => layer.querySelector(s);
+    const search = $('.enh-is__search');
+    const text = $('.enh-is__text');
+    const placeholder = $('.enh-is__placeholder');
+    const clearBtn = $('.enh-is__clear');
+    const results = $('.enh-is__results');
+
+    let data = null;
+    let run = 0;
+    const sleep = (ms, id) => new Promise((res, rej) => setTimeout(() => (id === run ? res() : rej(new Error('stop'))), ms));
+
+    // Render the filtered list. Cards that weren't already showing start as
+    // skeletons, then their SVG "loads" (as the real page fetches them).
+    let showing = [];
+    function render(query, animate) {
+      const list = data.names.filter((n) => n.toLowerCase().includes(query)).slice(0, cfg.shown);
+      if (!list.length) {
+        results.innerHTML = `<div class="enh-is__empty"><p>No results found for "${esc(query)}"</p><p class="enh-is__count">0 icons match your search</p></div>`;
+        showing = [];
+        return;
+      }
+      const before = new Set(showing);
+      results.innerHTML = `<div class="enh-is__grid">${list.map((n) => {
+        const fresh = animate && !before.has(n);
+        return `<div class="enh-is__card${fresh ? ' is-new' : ''}"><div class="enh-is__icon${fresh ? ' is-loading' : ''}" data-icon="${n}">${fresh ? '' : data.svgs[n] || ''}</div><code>.${n}</code></div>`;
+      }).join('')}</div>`;
+      showing = list;
+      if (animate) {
+        results.querySelectorAll('.is-loading').forEach((icon, i) => setTimeout(() => {
+          icon.classList.remove('is-loading');
+          icon.innerHTML = data.svgs[icon.dataset.icon] || '';
+        }, 160 + i * 25));
+      }
+    }
+
+    function setQuery(q) {
+      text.textContent = q;
+      placeholder.hidden = !!q;
+      clearBtn.hidden = !q;
+    }
+
+    async function play(id) {
+      setQuery('');
+      search.classList.remove('is-focused');
+      render('', false);
+      await sleep(1800, id);
+      for (const q of cfg.queries) {
+        search.classList.add('is-focused');
+        await sleep(400, id);
+        for (let i = 1; i <= q.length; i += 1) {
+          setQuery(q.slice(0, i));
+          render(q.slice(0, i), true);
+          await sleep(170 + Math.random() * 90, id);
+        }
+        await sleep(2600, id);
+        // Clear with the × button, as on the real page.
+        clearBtn.classList.add('is-pressed');
+        await sleep(260, id);
+        clearBtn.classList.remove('is-pressed');
+        setQuery('');
+        render('', true);
+        await sleep(1300, id);
+      }
+      search.classList.remove('is-focused');
+      await sleep(1500, id);
+      play(id).catch(() => {});
+    }
+
+    const start = async () => {
+      run += 1;
+      const id = run;
+      if (!data) {
+        try { data = await (await fetch(`${base}enhance-data/ids-icons.json`)).json(); } catch { return; }
+        $('.enh-is__search-icon').innerHTML = data.svgs['ids-icon-search'] || '';
+        layer.hidden = false; // the screenshot shows until the data arrives
+      }
+      if (id !== run) return;
+      if (reduceMotion) { render('', false); return; }
+      play(id).catch(() => {});
+    };
+    frame.addEventListener('deck-slide-shown', start);
+    new MutationObserver(() => { if (frame.hidden) run += 1; }).observe(frame, { attributes: true, attributeFilter: ['hidden'] });
+    if (!frame.hidden) start();
+  }
+
+  // ---------------------------------------------------------------- tokens
+  // Portfolio slide 13: the UDS Token Visualizer (IDS packages/tokens) in the
+  // screenshot becomes live, showing the Button tokens. A token card is clicked to open its detail view
+  // ("Referenced by N tokens"), then the app switches to dark mode and every
+  // value, alias and reference count swaps. Data comes from the app's own
+  // tokenUtils (enhance-data/ids-tokens.json); sizes are the app's CSS sizes.
+  const TOKENS = {
+    image: { w: 2048, h: 937 },
+    main: { x: 387 },        // the right panel (everything but the sidebar)
+    scale: 1.38,             // screenshot px per app CSS px
+  };
+
+  function tokens(frame) {
+    const cfg = TOKENS;
+    const slide = frame.querySelector('.slide');
+    const el = pictures(slide)[0];
+    const clip = el?.querySelector('.pic-clip');
+    const img = clip?.querySelector('img');
+    if (!img) return;
+    makeInteractive(slide);
+    addIconFonts();
+    const base = document.querySelector('script[src$="enhance.js"]')?.src.replace(/enhance\.js.*$/, '') || '../';
+
+    const boxW = num(el.getAttribute('style'), 'width');
+    const imgW = boxW * (parseFloat(img.style.width) / 100);
+    const layer = document.createElement('div');
+    layer.className = 'enh-is-layer';
+    layer.hidden = true;
+    layer.setAttribute('role', 'img');
+    layer.setAttribute('aria-label', 'Animated UDS Token Visualizer: the Button tokens; clicking color.button.primary.text.default shows the 12 tokens that reference it, then dark mode swaps every value and alias.');
+    Object.assign(layer.style, { left: img.style.left, top: img.style.top, width: img.style.width, height: img.style.height });
+    // 1 --ap = 1 CSS px of the app as captured in the screenshot.
+    layer.style.setProperty('--ap', u((imgW / cfg.image.w) * cfg.scale));
+    layer.innerHTML = `
+      <div class="enh-tk" aria-hidden="true" style="left:${(cfg.main.x / cfg.image.w) * 100}%">
+        <div class="enh-tk__header"><h3>UDS Tokens</h3></div>
+        <div class="enh-tk__main"></div>
+        <div class="enh-tk__cursor"></div>
+      </div>`;
+    clip.append(layer);
+    const app = layer.querySelector('.enh-tk');
+    const main = layer.querySelector('.enh-tk__main');
+    const cursor = layer.querySelector('.enh-tk__cursor');
+
+    let data = null;
+    let mode = 'light';
+    let run = 0;
+    const sleep = (ms, id) => new Promise((res, rej) => setTimeout(() => (id === run ? res() : rej(new Error('stop'))), ms));
+
+    const card = (t, attrs = '') => `
+      <div class="enh-tk__card" ${attrs}>
+        <div class="enh-tk__swatch" style="background:${esc(t.value)}"></div>
+        <div class="enh-tk__info">
+          <div class="enh-tk__name">${esc(t.name)}</div>
+          ${t.ref ? `<div class="enh-tk__ref">${esc(t.ref)}</div>` : ''}
+          <div class="enh-tk__value">${esc(t.value)}</div>
+          <div class="enh-tk__badges">${t.count > 0 ? `<span class="enh-tk__count">${t.count}</span>` : '<span class="enh-tk__unref">Not referenced</span>'}</div>
+        </div>
+      </div>`;
+
+    function setMode(m) {
+      mode = m;
+      app.dataset.mode = m;
+      const th = data[m].theme;
+      Object.entries({
+        '--tk-surface': th['surface.primary'], '--tk-bg': th['surface.secondary'], '--tk-text': th['text.primary.enabled'],
+        '--tk-text-2': th['text.secondary.enabled'], '--tk-border': th['border.light'], '--tk-link': data[m].link,
+      }).forEach(([k, v]) => app.style.setProperty(k, v));
+    }
+
+    function overview(changed) {
+      const d = data[mode];
+      main.innerHTML = `
+        <div class="enh-tk__section"><h4>${esc(d.section.title)}</h4><span class="enh-tk__tag">${esc(d.section.tag)}</span></div>
+        <div class="enh-tk__stats">
+          <div class="enh-tk__stat"><b>${d.stats.total}</b><span>Total tokens</span></div>
+          <div class="enh-tk__stat"><b>${d.stats.groups}</b><span>Groups</span></div>
+        </div>
+        <div class="enh-tk__group-label"><span>${esc(d.group.label)}</span><span class="enh-tk__count">${d.group.tokens.length}</span></div>
+        <div class="enh-tk__grid">${d.group.tokens.map((t) => card(t, `${t.name === d.detail.selected.name ? 'data-target' : ''}${changed ? ' data-changed' : ''}`)).join('')}</div>`;
+    }
+
+    function detail() {
+      const d = data[mode].detail;
+      main.innerHTML = `
+        <div class="enh-tk__back" data-back>← Back</div>
+        <div class="enh-tk__label">Selected token</div>
+        <div class="enh-tk__featured">${card(d.selected)}</div>
+        <div class="enh-tk__label">Referenced by ${d.usage.length} token${d.usage.length !== 1 ? 's' : ''}</div>
+        <div class="enh-tk__grid enh-tk__grid--in">${d.usage.map((t, i) => card(t, `style="animation-delay:${i * 35}ms"`)).join('')}</div>`;
+    }
+
+    // A pointer moves to an element inside the app and clicks it.
+    async function clickOn(target, id) {
+      const a = app.getBoundingClientRect();
+      const r = target.getBoundingClientRect();
+      const ap = a.width / app.offsetWidth; // rendered px per layout px
+      cursor.style.left = `${(r.left - a.left + Math.min(r.width * 0.5, 120 * ap)) / ap}px`;
+      cursor.style.top = `${(r.top - a.top + r.height * 0.45) / ap}px`;
+      cursor.classList.add('is-visible');
+      await sleep(900, id);
+      target.classList.add('is-hover');
+      await sleep(350, id);
+      cursor.classList.add('is-down');
+      await sleep(160, id);
+      cursor.classList.remove('is-down');
+      await sleep(120, id);
+    }
+
+    async function play(id) {
+      setMode('light');
+      overview(false);
+      cursor.classList.remove('is-visible');
+      cursor.style.left = '70%';
+      cursor.style.top = '80%';
+      await sleep(1600, id);
+      await clickOn(main.querySelector('[data-target]'), id);
+      detail();
+      await sleep(3600, id);
+      await clickOn(main.querySelector('[data-back]'), id);
+      overview(false);
+      await sleep(900, id);
+      cursor.classList.remove('is-visible');
+      await sleep(500, id);
+      // Dark mode: a data-attribute switch, every token swaps.
+      setMode('dark');
+      overview(true);
+      await sleep(3800, id);
+      await clickOn(main.querySelector('[data-target]'), id);
+      detail();
+      await sleep(3200, id);
+      cursor.classList.remove('is-visible');
+      setMode('light');
+      overview(true);
+      await sleep(1200, id);
+      play(id).catch(() => {});
+    }
+
+    const start = async () => {
+      run += 1;
+      const id = run;
+      if (!data) {
+        try { data = await (await fetch(`${base}enhance-data/ids-tokens.json`)).json(); } catch { return; }
+        setMode('light');
+        overview(false);
+        layer.hidden = false; // the screenshot shows until the data arrives
+      }
+      if (id !== run || reduceMotion) return;
+      play(id).catch(() => {});
+    };
+    frame.addEventListener('deck-slide-shown', start);
+    new MutationObserver(() => { if (frame.hidden) run += 1; }).observe(frame, { attributes: true, attributeFilter: ['hidden'] });
+    if (!frame.hidden) start();
+  }
+
+  const ENHANCERS = { carousel, zoom, terminal, blocked, iconsearch, tokens };
   for (const frame of document.querySelectorAll('[data-enhance]')) {
     for (const spec of frame.dataset.enhance.split(/\s+/)) {
       const [name, ...args] = spec.split(':');

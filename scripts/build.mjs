@@ -93,6 +93,8 @@ function page({ title, description, fonts, body, css, head = '', scriptTag = '',
     <title>${esc(title)}</title>
     ${description ? `<meta name="description" content="${esc(description)}">` : ''}
     ${fontLinks(fonts)}
+    <link rel="icon" type="image/png" href="${css.replace(/styles\.css$/, 'favicon.png')}">
+    <link rel="apple-touch-icon" href="${css.replace(/styles\.css$/, 'favicon.png')}">
     <link rel="stylesheet" href="${css}">
     ${head}
   </head>
@@ -125,6 +127,7 @@ async function main() {
   await fs.copyFile(path.join(srcDir, 'html-deck.css'), path.join(dist, 'html-deck.css'));
   await fs.copyFile(path.join(srcDir, 'html-deck.js'), path.join(dist, 'html-deck.js'));
   await fs.copyFile(path.join(srcDir, 'enhance.js'), path.join(dist, 'enhance.js'));
+  await fs.copyFile(path.join(srcDir, 'favicon.png'), path.join(dist, 'favicon.png'));
   await fs.cp(path.join(srcDir, 'components'), path.join(dist, 'components'), { recursive: true });
 
   const built = [];

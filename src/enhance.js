@@ -204,15 +204,17 @@
           ['Individual', 'This project will be managed by me with no other contributors to the code base'],
           ['Team', 'Teammates will contribute, so you\'ll get branching and review guidance'],
         ], path: [1, 0] },
-        { input: 'Project name:', value: 'aimee-timesheet-redesign' },
+        { input: 'What do you want to call this project?', value: 'timesheet-redesign' },
+        { out: '<span class="t-dim">→ Project will be created as: aimeemaroney-timesheet-redesign</span>' },
         { spin: 'Checking Azure DevOps for an existing repo…', done: 'Name is available' },
         { select: 'What are you building?', options: [
-          ['Prototype', 'Explore an idea quickly. Vanilla JS is recommended'],
+          ['Prototype', 'Experiment, concept, design artifact, or one-off — deploys to Playground'],
           ['App', 'A feature headed to engineering, built on a product framework'],
         ], path: [1] },
-        { select: 'Which product is it for?', options: [
-          ['Time'], ['DealCloud'], ['Billstream'], ['Compliance'], ['Termsheet'], ['Celeste'], ['Standalone'], ['Other'],
-        ], path: [] },
+        { select: 'Is this standalone or related to an existing product?', options: [
+          ['Standalone', 'No specific product — general or new project'], ['Billstream'], ['Time'], ['Compliance'],
+          ['DealCloud'], ['Termsheet'], ['Celeste'], ['Other Product'],
+        ], path: [2] },
         { select: 'Framework', options: [
           ['React 18 (Vite)', 'Recommended for Time'],
           ['Next.js (App Router)'],
@@ -231,7 +233,7 @@
         { spin: 'Registering the Azure DevOps repo and pipeline…', done: 'Repo and pipeline registered' },
         { out: '' },
         { out: '<span class="t-ok t-b">Done!</span> Next steps:' },
-        { out: '  <span class="t-accent">cd aimee-timesheet-redesign</span>' },
+        { out: '  <span class="t-accent">cd aimeemaroney-timesheet-redesign</span>' },
         { out: '  <span class="t-accent">npm run dev</span>' },
         { out: '' },
         { prompt: 'aimeemaroney@Aimees-Air-2 ~ % ', end: true },
@@ -239,7 +241,9 @@
     },
   };
 
-  function terminal(frame, scriptName) {
+  // "terminal:<script>:outline" draws a white rounded outline around the
+  // window instead of relying on the picture's own border.
+  function terminal(frame, scriptName, variant) {
     const script = TERMINAL_SCRIPTS[scriptName] || Object.values(TERMINAL_SCRIPTS)[0];
     const slide = frame.querySelector('.slide');
     const el = pictures(slide)[0];
@@ -247,8 +251,12 @@
     if (!clip) return;
     makeInteractive(slide);
     clip.querySelector('img').hidden = true;
+    // Text scales with the window: about 64 type sizes across, like a 120-column
+    // terminal shown at slide size.
+    const boxW = num(el.getAttribute('style'), 'width');
+    if (variant === 'outline') clip.classList.add('enh-term-outline');
     clip.insertAdjacentHTML('beforeend', `
-      <div class="enh-term" role="img" aria-label="${esc(script.label)}">
+      <div class="enh-term" style="font-size:${u(boxW / 64)}" role="img" aria-label="${esc(script.label)}">
         <div class="enh-term__bar" aria-hidden="true"><i></i><i></i><i></i><span>${esc(script.title)}</span></div>
         <div class="enh-term__body" aria-hidden="true"><div class="enh-term__lines"></div></div>
       </div>`);
@@ -371,8 +379,8 @@
   const ENHANCERS = { carousel, zoom, terminal, blocked };
   for (const frame of document.querySelectorAll('[data-enhance]')) {
     for (const spec of frame.dataset.enhance.split(/\s+/)) {
-      const [name, arg] = spec.split(':');
-      ENHANCERS[name]?.(frame, arg);
+      const [name, ...args] = spec.split(':');
+      ENHANCERS[name]?.(frame, ...args);
     }
   }
 })();

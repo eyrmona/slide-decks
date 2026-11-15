@@ -46,6 +46,7 @@ A converted slide can be made interactive from `decks/decks.json` without changi
 
 - `terminal:<script>`: the slide's terminal screenshot becomes a live terminal that plays a scripted CLI
   session and loops (e.g. `"3": "terminal:create-intapp-app"`). Scripts live in `TERMINAL_SCRIPTS`.
+  Add `:outline` for a white rounded window edge (used on dark slides, e.g. Portfolio slide 19).
 
 - `blocked`: each card on the slide (a filled box) gets a "not allowed" icon in its top-right corner.
 

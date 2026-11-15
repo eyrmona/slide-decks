@@ -676,7 +676,108 @@
     if (!frame.hidden) start();
   }
 
-  const ENHANCERS = { carousel, zoom, terminal, blocked, iconsearch, tokens };
+  // ---------------------------------------------------------------- screens
+  // A picture of an app becomes a click-through: a pointer clicks real
+  // targets and the screen crossfades to the next captured screen.
+  // "screens:<flow>" picks the flow. Screens live in enhance-data/<flow>/;
+  // targets are fractions of the screen (x, y, w, h), measured in the app.
+  const SCREEN_FLOWS = {
+    // CLI deck slide 11: the project create-intapp-app scaffolds
+    // (captured from a scaffolded project at 1720 × 908).
+    scaffold: {
+      label: 'Animated scaffolded project: from the Your Projects landing page, Dashboard Designs opens the Generic Dashboard template, which switches to dark mode; then Patterns opens the Basic Form pattern in a modal.',
+      start: 'home',
+      steps: [
+        { wait: 1800 },
+        { click: { x: 0.079, y: 0.238, w: 0.203, h: 0.380 }, to: 'dashboards' },
+        { wait: 1300 },
+        { click: { x: 0.398, y: 0.282, w: 0.203, h: 0.141 }, to: 'generic' },
+        { wait: 1600 },
+        { click: { x: 0.965, y: 0.011, w: 0.026, h: 0.048 }, to: 'generic-dark', fade: 500 },
+        { wait: 2200 },
+        { go: 'home' },
+        { wait: 1000 },
+        { click: { x: 0.292, y: 0.238, w: 0.203, h: 0.380 }, to: 'patterns' },
+        { wait: 1300 },
+        { click: { x: 0.398, y: 0.282, w: 0.203, h: 0.141 }, to: 'form', fade: 400 },
+        { wait: 2800 },
+        { go: 'home' },
+      ],
+    },
+  };
+
+  function screens(frame, flowName) {
+    const flow = SCREEN_FLOWS[flowName];
+    const slide = frame.querySelector('.slide');
+    const el = pictures(slide)[0];
+    const clip = el?.querySelector('.pic-clip');
+    const img = clip?.querySelector('img');
+    if (!flow || !img) return;
+    makeInteractive(slide);
+    const base = document.querySelector('script[src$="enhance.js"]')?.src.replace(/enhance\.js.*$/, '') || '../';
+    const names = [...new Set([flow.start, ...flow.steps.map((s) => s.to || s.go).filter(Boolean)])];
+
+    const layer = document.createElement('div');
+    layer.className = 'enh-sc';
+    layer.setAttribute('role', 'img');
+    layer.setAttribute('aria-label', flow.label);
+    layer.innerHTML = names.map((n) => `<img src="${base}enhance-data/${flowName}/${n}.jpg" alt="" data-screen="${n}" decoding="async">`).join('')
+      + '<span class="enh-sc__hit"></span><span class="enh-sc__cursor"></span>';
+    clip.append(layer);
+    const shots = Object.fromEntries([...layer.querySelectorAll('[data-screen]')].map((i) => [i.dataset.screen, i]));
+    const cursor = layer.querySelector('.enh-sc__cursor');
+    const hit = layer.querySelector('.enh-sc__hit');
+
+    let run = 0;
+    const sleep = (ms, id) => new Promise((res, rej) => setTimeout(() => (id === run ? res() : rej(new Error('stop'))), ms));
+    const show = (name, fade = 300) => {
+      for (const [n, i] of Object.entries(shots)) {
+        i.style.transitionDuration = `${fade}ms`;
+        i.classList.toggle('is-shown', n === name);
+      }
+    };
+    const pct = (v) => `${v * 100}%`;
+
+    async function play(id) {
+      show(flow.start, 0);
+      cursor.classList.remove('is-visible');
+      Object.assign(cursor.style, { left: '62%', top: '78%' });
+      for (const s of flow.steps) {
+        if (s.wait) await sleep(s.wait, id);
+        if (s.go) { cursor.classList.remove('is-visible'); show(s.go, 450); await sleep(450, id); }
+        if (s.click) {
+          const r = s.click;
+          Object.assign(cursor.style, { left: pct(r.x + r.w / 2), top: pct(r.y + r.h / 2) });
+          cursor.classList.add('is-visible');
+          await sleep(950, id);
+          // Hover outline on the target, then the click.
+          Object.assign(hit.style, { left: pct(r.x), top: pct(r.y), width: pct(r.w), height: pct(r.h) });
+          hit.classList.add('is-on');
+          await sleep(350, id);
+          cursor.classList.add('is-down');
+          await sleep(150, id);
+          cursor.classList.remove('is-down');
+          hit.classList.remove('is-on');
+          show(s.to, s.fade);
+          await sleep(s.fade ?? 300, id);
+        }
+      }
+      play(id).catch(() => {});
+    }
+
+    const start = () => {
+      run += 1;
+      const id = run;
+      if (reduceMotion) { show(flow.start, 0); return; }
+      play(id).catch(() => {});
+    };
+    frame.addEventListener('deck-slide-shown', start);
+    new MutationObserver(() => { if (frame.hidden) { run += 1; show(flow.start, 0); } }).observe(frame, { attributes: true, attributeFilter: ['hidden'] });
+    show(flow.start, 0);
+    if (!frame.hidden) start();
+  }
+
+  const ENHANCERS = { carousel, zoom, terminal, blocked, iconsearch, tokens, screens };
   for (const frame of document.querySelectorAll('[data-enhance]')) {
     for (const spec of frame.dataset.enhance.split(/\s+/)) {
       const [name, ...args] = spec.split(':');

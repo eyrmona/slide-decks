@@ -54,6 +54,9 @@ A converted slide can be made interactive from `decks/decks.json` without changi
 - `tokens`: Portfolio slide 13 only. The UDS Token Visualizer in the screenshot becomes live on the Button tokens: a token is
   clicked to show what references it, then dark mode swaps every value. Data is generated with the app's own
   `tokenUtils.js` into `src/enhance-data/ids-tokens.json`.
+- `screens:<flow>`: a screenshot of an app becomes a click-through of real captured screens, with a pointer
+  clicking each target (e.g. CLI slide 11, `screens:scaffold`). Flows live in `SCREEN_FLOWS`; screens in
+  `src/enhance-data/<flow>/`.
 - `blocked`: each card on the slide (a filled box) gets a "not allowed" icon in its top-right corner.
 
 Combine them per slide, e.g. `"enhance": { "5": "carousel", "6": "zoom" }`. Code: `src/enhance.js`.

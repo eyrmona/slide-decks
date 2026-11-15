@@ -541,3 +541,25 @@ body.deck-page {
 .enh-tk__cursor.is-visible { opacity: 1; }
 .enh-tk__cursor.is-down { transform: scale(0.85); }
 @media (prefers-reduced-motion: reduce) { .enh-tk, .enh-tk__card, .enh-tk__stat, .enh-tk__cursor, .enh-tk [data-changed] * { transition: none; animation: none; } }
+
+/* App click-through (enhance: screens). Captured screens stack and crossfade;
+   until the first one loads, the original picture shows underneath. */
+.enh-sc { position: absolute; inset: 0; }
+.enh-sc img { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; transition: opacity 300ms ease; }
+.enh-sc img.is-shown { opacity: 1; }
+.enh-sc__hit {
+  position: absolute; box-sizing: border-box; pointer-events: none;
+  border-radius: calc(4 * var(--u)); box-shadow: 0 calc(3 * var(--u)) calc(10 * var(--u)) rgb(6 37 75 / 0.18);
+  outline: calc(1.2 * var(--u)) solid rgb(3 83 199 / 0.55);
+  opacity: 0; transition: opacity 150ms;
+}
+.enh-sc__hit.is-on { opacity: 1; }
+.enh-sc__cursor {
+  position: absolute; width: calc(11 * var(--u)); height: calc(16 * var(--u)); opacity: 0; pointer-events: none; z-index: 2;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 18 26'%3E%3Cpath d='M1 1v20l5-5 4 9 3-1.4-4-8.6h7z' fill='%23111' stroke='%23fff' stroke-width='1.6' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat center / contain;
+  transition: left 850ms cubic-bezier(.3,.7,.3,1), top 850ms cubic-bezier(.3,.7,.3,1), opacity 250ms, transform 120ms;
+  transform-origin: top left;
+}
+.enh-sc__cursor.is-visible { opacity: 1; }
+.enh-sc__cursor.is-down { transform: scale(0.85); }
+@media (prefers-reduced-motion: reduce) { .enh-sc img, .enh-sc__cursor, .enh-sc__hit { transition: none; } }

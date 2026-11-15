@@ -21,7 +21,8 @@
     "date": "2026",
     "enhance": {
       "3": "terminal:create-intapp-app",
-      "4": "blocked"
+      "4": "blocked",
+      "11": "screens:scaffold"
     }
   },
   {

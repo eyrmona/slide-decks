@@ -46,7 +46,8 @@ uds-overflow-menu {
 .uds-menu[hidden] { display: none; }
 
 /* Panels share one cell; the active one is in flow, the others slide aside. */
-.uds-menu__viewport { position: relative; overflow: hidden; }
+/* clip (not hidden): the viewport must never scroll, or panels end up off to one side. */
+.uds-menu__viewport { position: relative; overflow: hidden; overflow: clip; }
 .uds-menu__panel {
   width: 100%;
   background: var(--uds-menu-surface);
@@ -55,6 +56,7 @@ uds-overflow-menu {
 .uds-menu__panel[data-pos='center'] { position: relative; transform: none; visibility: visible; transition-delay: 0s; }
 .uds-menu__panel[data-pos='left'] { position: absolute; inset: 0 auto auto 0; transform: translateX(-100%); visibility: hidden; }
 .uds-menu__panel[data-pos='right'] { position: absolute; inset: 0 auto auto 0; transform: translateX(100%); visibility: hidden; }
+.uds-menu:not([data-ready]) .uds-menu__panel { transition: none; }
 @media (prefers-reduced-motion: reduce) { .uds-menu__panel { transition: none; } }
 
 /* Header (Billstream: 12 / 8 / 10 / 16 padding, light bottom border) */

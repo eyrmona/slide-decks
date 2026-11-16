@@ -270,7 +270,15 @@
       item.dataset.active = '';
       current().querySelectorAll('.uds-menu-item').forEach((i) => { i.tabIndex = i === item ? 0 : -1; });
       if (focus) item.focus({ preventScroll: true });
-      item.scrollIntoView({ block: 'nearest' });
+      // Scroll only the item's own list, vertically. scrollIntoView() would also
+      // scroll the clipped viewport sideways while a panel is still sliding in.
+      const list = item.closest('.uds-menu__list--scroll');
+      if (list) {
+        const l = list.getBoundingClientRect();
+        const r = item.getBoundingClientRect();
+        if (r.top < l.top) list.scrollTop -= l.top - r.top;
+        else if (r.bottom > l.bottom) list.scrollTop += r.bottom - l.bottom;
+      }
     }
 
     // Animate the viewport between panel heights so a shorter or taller panel
@@ -464,7 +472,10 @@
       e.stopPropagation();
     });
 
-    layoutPanels();
+    // Place the panels without animating, so a freshly built menu doesn't show
+    // its nested lists sliding away; transitions start on the next frames.
+    positionPanels();
+    requestAnimationFrame(() => requestAnimationFrame(() => { menu.dataset.ready = ''; }));
     return {
       focusFirst: () => setActive(navigable()[0]),
       focusLast: () => setActive(navigable().at(-1)),

@@ -273,7 +273,21 @@
       item.scrollIntoView({ block: 'nearest' });
     }
 
+    // Animate the viewport between panel heights so a shorter or taller panel
+    // doesn't snap the menu's edge (and clip the panel sliding out).
+    let heightAnim;
     function layoutPanels() {
+      const viewport = menu.querySelector('.uds-menu__viewport');
+      const from = viewport.getBoundingClientRect().height;
+      positionPanels();
+      const to = viewport.getBoundingClientRect().height;
+      heightAnim?.cancel();
+      if (from && to && Math.abs(from - to) > 0.5 && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        heightAnim = viewport.animate([{ height: `${from}px` }, { height: `${to}px` }], { duration: 220, easing: 'cubic-bezier(0.2, 0, 0, 1)' });
+      }
+    }
+
+    function positionPanels() {
       const order = history;
       for (const [id, p] of panels) {
         const depth = order.indexOf(id);
